@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import ContentManagement from "@/components/ContentManagement";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import ContentUploadForm from "@/components/ContentUploadForm";
-import UpcomingUploadForm from "@/components/UpcomingUploadForm";
+import UpcomingContentManagement from "@/components/UpcomingContentManagement";
 import AdminAuth from "@/components/AdminAuth";
 
 const Admin = () => {
@@ -41,7 +41,7 @@ const Admin = () => {
       case "upload":
         return <ContentUploadForm />;
       case "upcoming":
-        return <UpcomingUploadForm />;
+        return <UpcomingContentManagement />;
       case "manage":
         return <ContentManagement />;
       case "analytics":

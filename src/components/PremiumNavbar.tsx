@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Search, Menu, X, Home, Play, TrendingUp } from "lucide-react";
+import { Search, Menu, X, Home, Play, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +13,7 @@ const PremiumNavbar = () => {
     { name: "Home", path: "/", icon: Home },
     { name: "Movies", path: "/movies", icon: Play },
     { name: "TV Shows", path: "/tv-shows", icon: Play },
-    { name: "Trending", path: "/trending", icon: TrendingUp },
+    { name: "Upcoming", path: "/upcoming", icon: Calendar },
   ];
 
   return (

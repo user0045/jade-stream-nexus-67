@@ -7,31 +7,78 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const UpcomingUploadForm = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
     type: "",
     genre: "",
-    rating: "",
     releaseDate: "",
     description: "",
-    thumbnail: null as File | null,
-    trailer: null as File | null
+    thumbnailUrl: "",
+    trailerUrl: "",
+    sectionOrder: ""
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = (field: string, file: File | null) => {
-    setFormData(prev => ({ ...prev, [field]: file }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if there are already 20 upcoming content items (simulate check)
+    const existingUpcomingContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
+    if (existingUpcomingContent.length >= 20) {
+      toast({
+        title: "Error",
+        description: "Maximum of 20 upcoming content items allowed. Please delete some items first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if section order is already taken
+    const orderTaken = existingUpcomingContent.some((item: any) => item.sectionOrder === parseInt(formData.sectionOrder));
+    if (orderTaken) {
+      toast({
+        title: "Error", 
+        description: `Section order ${formData.sectionOrder} is already taken. Please choose a different number.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     console.log("Upcoming content data:", formData);
-    // Here you would typically send the data to your backend
+    
+    // Save to localStorage (simulate database)
+    const newContent = {
+      ...formData,
+      id: Date.now(),
+      sectionOrder: parseInt(formData.sectionOrder)
+    };
+    
+    const updatedContent = [...existingUpcomingContent, newContent];
+    localStorage.setItem("upcomingContent", JSON.stringify(updatedContent));
+    
+    toast({
+      title: "Success",
+      description: "Upcoming content added successfully!"
+    });
+
+    // Reset form
+    setFormData({
+      title: "",
+      type: "",
+      genre: "",
+      releaseDate: "",
+      description: "",
+      thumbnailUrl: "",
+      trailerUrl: "",
+      sectionOrder: ""
+    });
   };
 
   return (
@@ -74,7 +121,7 @@ const UpcomingUploadForm = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="genre" className="text-foreground">Genre</Label>
               <Input
@@ -88,33 +135,32 @@ const UpcomingUploadForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="rating" className="text-foreground">Rating</Label>
-              <Select onValueChange={(value) => handleInputChange("rating", value)} required>
+              <Label htmlFor="sectionOrder" className="text-foreground">Section Order (1-20)</Label>
+              <Select onValueChange={(value) => handleInputChange("sectionOrder", value)} required>
                 <SelectTrigger className="bg-input border-border text-foreground">
-                  <SelectValue placeholder="Select rating" />
+                  <SelectValue placeholder="Select order position" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="G">G</SelectItem>
-                  <SelectItem value="PG">PG</SelectItem>
-                  <SelectItem value="PG-13">PG-13</SelectItem>
-                  <SelectItem value="R">R</SelectItem>
-                  <SelectItem value="TV-14">TV-14</SelectItem>
-                  <SelectItem value="TV-MA">TV-MA</SelectItem>
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="releaseDate" className="text-foreground">Release Date</Label>
-              <Input
-                id="releaseDate"
-                type="date"
-                value={formData.releaseDate}
-                onChange={(e) => handleInputChange("releaseDate", e.target.value)}
-                className="bg-input border-border text-foreground"
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="releaseDate" className="text-foreground">Release Date</Label>
+            <Input
+              id="releaseDate"
+              type="date"
+              value={formData.releaseDate}
+              onChange={(e) => handleInputChange("releaseDate", e.target.value)}
+              className="bg-input border-border text-foreground"
+              required
+            />
           </div>
 
           <div className="space-y-2">
@@ -132,31 +178,29 @@ const UpcomingUploadForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="thumbnail" className="text-foreground">Thumbnail Image</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="thumbnail"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange("thumbnail", e.target.files?.[0] || null)}
-                  className="bg-input border-border text-foreground file:bg-primary file:text-primary-foreground file:border-0 file:rounded-md file:px-3 file:py-1"
-                />
-                <Upload className="h-4 w-4 text-muted-foreground" />
-              </div>
+              <Label htmlFor="thumbnailUrl" className="text-foreground">Thumbnail URL</Label>
+              <Input
+                id="thumbnailUrl"
+                type="url"
+                value={formData.thumbnailUrl}
+                onChange={(e) => handleInputChange("thumbnailUrl", e.target.value)}
+                placeholder="https://example.com/thumbnail.jpg"
+                className="bg-input border-border text-foreground"
+                required
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="trailer" className="text-foreground">Trailer Video</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="trailer"
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => handleFileChange("trailer", e.target.files?.[0] || null)}
-                  className="bg-input border-border text-foreground file:bg-primary file:text-primary-foreground file:border-0 file:rounded-md file:px-3 file:py-1"
-                />
-                <Upload className="h-4 w-4 text-muted-foreground" />
-              </div>
+              <Label htmlFor="trailerUrl" className="text-foreground">Trailer URL</Label>
+              <Input
+                id="trailerUrl"
+                type="url"
+                value={formData.trailerUrl}
+                onChange={(e) => handleInputChange("trailerUrl", e.target.value)}
+                placeholder="https://example.com/trailer.mp4"
+                className="bg-input border-border text-foreground"
+                required
+              />
             </div>
           </div>
 

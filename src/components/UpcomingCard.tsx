@@ -6,19 +6,21 @@ import { Badge } from "@/components/ui/badge";
 interface UpcomingCardProps {
   title: string;
   genre: string;
-  rating: string;
   releaseDate: string;
   description: string;
   type: "movie" | "tv";
+  thumbnailUrl?: string;
+  trailerUrl?: string;
 }
 
 const UpcomingCard = ({
   title,
   genre,
-  rating,
   releaseDate,
   description,
-  type
+  type,
+  thumbnailUrl,
+  trailerUrl
 }: UpcomingCardProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -37,6 +39,12 @@ const UpcomingCard = ({
     return diffDays > 0 ? diffDays : 0;
   };
 
+  const handlePlayTrailer = () => {
+    if (trailerUrl) {
+      window.open(trailerUrl, '_blank');
+    }
+  };
+
   return (
     <div className="group relative bg-gradient-to-r from-green-950/40 to-green-900/20 rounded-lg overflow-hidden border border-green-800/30 hover:border-green-600/50 transition-all duration-300 hover:shadow-2xl hover:shadow-green-500/20">
       {/* Shine effect */}
@@ -45,9 +53,21 @@ const UpcomingCard = ({
       <div className="flex">
         {/* Thumbnail - Left 1/3 */}
         <div className="w-1/3 h-48 bg-gradient-to-br from-green-800/50 to-green-900/50 flex items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-green-950/80 to-transparent"></div>
-          <div className="text-green-400 z-10">
-            <Play className="h-12 w-12" />
+          {thumbnailUrl ? (
+            <img 
+              src={thumbnailUrl} 
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <div className={`absolute inset-0 bg-gradient-to-t from-green-950/80 to-transparent flex items-center justify-center ${thumbnailUrl ? 'hidden' : ''}`}>
+            <div className="text-green-400 z-10">
+              <Play className="h-12 w-12" />
+            </div>
           </div>
           <Badge 
             variant="secondary" 
@@ -64,9 +84,6 @@ const UpcomingCard = ({
               <h3 className="text-2xl font-bold text-green-100 group-hover:text-green-300 transition-colors duration-300">
                 {title}
               </h3>
-              <Badge variant="outline" className="border-green-600 text-green-400">
-                {rating}
-              </Badge>
             </div>
             
             <p className="text-green-300/80 text-sm mb-3">{genre}</p>
@@ -94,6 +111,17 @@ const UpcomingCard = ({
               <Info className="h-4 w-4 mr-2" />
               More Info
             </Button>
+            {trailerUrl && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handlePlayTrailer}
+                className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Watch Trailer
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm"
