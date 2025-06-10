@@ -6,10 +6,12 @@ import MovieCard from "./MovieCard";
 interface ContentRowProps {
   title: string;
   movies: Array<{
+    id?: number;
     title: string;
     genre: string;
     rating: string;
     year: string;
+    videoUrl?: string;
   }>;
 }
 
@@ -62,10 +64,12 @@ const ContentRow = ({ title, movies }: ContentRowProps) => {
           {movies.map((movie, index) => (
             <MovieCard
               key={index}
+              id={movie.id}
               title={movie.title}
               genre={movie.genre}
               rating={movie.rating}
               year={movie.year}
+              videoUrl={movie.videoUrl}
             />
           ))}
         </div>

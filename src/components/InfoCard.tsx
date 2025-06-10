@@ -94,7 +94,7 @@ const InfoCard = ({ isOpen, onClose, content }: InfoCardProps) => {
 
               <p className="text-primary/80 text-lg mb-6 font-medium">{content.genre}</p>
 
-              {/* Action buttons */}
+              {/* Action button - only Play Now */}
               <div className="flex gap-4 mb-6">
                 <Button 
                   size="lg"
@@ -103,13 +103,6 @@ const InfoCard = ({ isOpen, onClose, content }: InfoCardProps) => {
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Play Now
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 px-8 py-3 rounded-lg transition-all duration-300"
-                >
-                  Add to List
                 </Button>
               </div>
             </div>
