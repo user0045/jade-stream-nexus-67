@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Edit3, 
@@ -8,7 +7,9 @@ import {
   Filter,
   PlayCircle,
   Calendar,
-  Star
+  Star,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,8 @@ const ContentManagement = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [allContent, setAllContent] = useState<Content[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     // Load content from localStorage or use default data
@@ -74,6 +77,12 @@ const ContentManagement = () => {
     content.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentContent = filteredContent.slice(startIndex, endIndex);
+
   const handleEdit = (id: number) => {
     const content = allContent.find(c => c.id === id);
     toast({
@@ -88,11 +97,35 @@ const ContentManagement = () => {
     setAllContent(updatedContent);
     localStorage.setItem("contentLibrary", JSON.stringify(updatedContent));
     
+    // Reset to first page if current page becomes empty
+    const newFilteredContent = updatedContent.filter(content =>
+      content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      content.genre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      content.type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const newTotalPages = Math.ceil(newFilteredContent.length / itemsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
+    
     toast({
       title: "Content Deleted",
       description: `"${content?.title}" has been removed from the library.`
     });
   };
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   return (
     <div className="space-y-6">
@@ -165,7 +198,9 @@ const ContentManagement = () => {
       <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
         <CardHeader>
           <CardTitle className="text-foreground">Content Library</CardTitle>
-          <CardDescription>Manage your movies and TV shows ({filteredContent.length} of {allContent.length} items)</CardDescription>
+          <CardDescription>
+            Manage your movies and TV shows (Page {currentPage} of {totalPages} - {filteredContent.length} of {allContent.length} items)
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -182,7 +217,7 @@ const ContentManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredContent.map((content) => (
+              {currentContent.map((content) => (
                 <TableRow key={content.id}>
                   <TableCell className="font-medium text-foreground">{content.title}</TableCell>
                   <TableCell className="text-foreground">
@@ -233,6 +268,39 @@ const ContentManagement = () => {
               ))}
             </TableBody>
           </Table>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className="gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </span>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="gap-2"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp, Users, PlayCircle, Download, Eye } from "lucide-react";
 
@@ -6,13 +5,12 @@ const AnalyticsDashboard = () => {
   const analyticsData = [
     { title: "Total Views", value: "15.2M", change: "+12%", icon: Eye },
     { title: "Watch Time", value: "890K hrs", change: "+18%", icon: PlayCircle },
-    { title: "New Signups", value: "2,543", change: "+25%", icon: Users },
   ];
 
   return (
     <div className="space-y-6">
       {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {analyticsData.map((stat) => {
           const IconComponent = stat.icon;
           return (

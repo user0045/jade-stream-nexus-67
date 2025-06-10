@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import UpcomingUploadForm from "./UpcomingUploadForm";
+import UpcomingEditForm from "./UpcomingEditForm";
 
 interface UpcomingContent {
   id: number;
@@ -24,6 +25,7 @@ const UpcomingContentManagement = () => {
   const { toast } = useToast();
   const [upcomingContent, setUpcomingContent] = useState<UpcomingContent[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     loadUpcomingContent();
@@ -47,11 +49,16 @@ const UpcomingContentManagement = () => {
   };
 
   const handleEdit = (id: number) => {
-    // For now, just show an alert. In a real app, this would open an edit form
-    toast({
-      title: "Edit Feature",
-      description: "Edit functionality would be implemented here."
-    });
+    setEditingId(id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleSaveEdit = () => {
+    setEditingId(null);
+    loadUpcomingContent();
   };
 
   const formatDate = (dateString: string) => {
@@ -79,6 +86,27 @@ const UpcomingContentManagement = () => {
           </Button>
         </div>
         <UpcomingUploadForm />
+      </div>
+    );
+  }
+
+  if (editingId) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Edit Upcoming Content</h2>
+          <Button
+            variant="outline"
+            onClick={handleCancelEdit}
+          >
+            Back to Management
+          </Button>
+        </div>
+        <UpcomingEditForm
+          contentId={editingId}
+          onCancel={handleCancelEdit}
+          onSave={handleSaveEdit}
+        />
       </div>
     );
   }
