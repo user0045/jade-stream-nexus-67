@@ -3,9 +3,18 @@ import PremiumNavbar from "@/components/PremiumNavbar";
 import HeroSlider from "@/components/HeroSlider";
 import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 
+interface Movie {
+  id: number;
+  title: string;
+  genre: string;
+  rating: string;
+  year: string;
+  type: "movie" | "tv";
+}
+
 const Index = () => {
   // All content combined for the home page (both movies and TV shows)
-  const allContent = [
+  const allContent: Movie[] = [
     // Movies
     { id: 13, title: "Indiana Jones 5", genre: "Action • Adventure", rating: "PG-13", year: "2023", type: "movie" },
     { id: 14, title: "Transformers: Rise of the Beasts", genre: "Action • Sci-Fi", rating: "PG-13", year: "2023", type: "movie" },
@@ -51,7 +60,7 @@ const Index = () => {
   ];
 
   // Get latest 11 items for each category
-  const getLatest11 = (filterFn: (item: any) => boolean) => {
+  const getLatest11 = (filterFn: (item: Movie) => boolean): Movie[] => {
     return allContent
       .filter(filterFn)
       .sort((a, b) => parseInt(b.year) - parseInt(a.year))
@@ -104,6 +113,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="New Releases" 
             movies={newReleases}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("New Releases")}
@@ -112,6 +122,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Popular" 
             movies={popular}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Popular")}
@@ -120,6 +131,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Action & Adventure" 
             movies={actionAdventure}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Action & Adventure")}
@@ -128,6 +140,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Comedy" 
             movies={comedy}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Comedy")}
@@ -136,6 +149,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Crime" 
             movies={crime}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Crime")}
@@ -144,6 +158,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Drama" 
             movies={drama}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Drama")}
@@ -152,6 +167,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Horror" 
             movies={horror}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Horror")}
@@ -160,6 +176,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Mystery & Thriller" 
             movies={mysteryThriller}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Mystery & Thriller")}
@@ -168,6 +185,7 @@ const Index = () => {
           <SimplePremiumContentRow 
             title="Sci-Fi" 
             movies={sciFi}
+            contentType="all"
             onMoviePlay={(id) => handleContentAction(id, "Play")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
             onSeeMore={() => handleSeeMore("Sci-Fi")}
