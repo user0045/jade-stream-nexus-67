@@ -41,13 +41,28 @@ const SeeMore = () => {
     console.log(`${action} movie with ID: ${movieId}`);
   };
 
+  // Format title to have only first letter of each word capitalized
+  const formatTitle = (text: string) => {
+    return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  const getDisplayTitle = () => {
+    let displayTitle = formatTitle(title);
+    if (contentType === "movie") {
+      displayTitle += " - Movies";
+    } else if (contentType === "tv") {
+      displayTitle += " - TV Shows";
+    }
+    return displayTitle;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <PremiumNavbar />
       
       <div className="pt-24 pb-12">
         <div className="container mx-auto px-6">
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-12">
             <Button
               variant="ghost"
               size="icon"
@@ -56,8 +71,8 @@ const SeeMore = () => {
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
-            <h1 className="text-4xl font-bold text-foreground">
-              {title} {contentType === "movie" ? "- Movies" : contentType === "tv" ? "- TV Shows" : ""}
+            <h1 className="text-2xl font-thin uppercase tracking-[0.3em] text-foreground font-mono">
+              {getDisplayTitle()}
             </h1>
           </div>
           

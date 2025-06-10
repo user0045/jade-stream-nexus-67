@@ -45,12 +45,12 @@ const UpcomingCard = ({
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const handlePlay = () => {
+  const handleTrailer = () => {
     navigate('/player', { 
       state: { 
         videoUrl: trailerUrl || "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-        title: `${title} - Preview`,
-        description: `Preview of ${title}. ${description}`,
+        title: `${title} - Trailer`,
+        description: `Official trailer for ${title}. ${description}`,
         duration: "2h 30m"
       } 
     });
@@ -124,11 +124,11 @@ const UpcomingCard = ({
             <div className="flex gap-3">
               <Button 
                 size="sm" 
-                onClick={handlePlay}
+                onClick={handleTrailer}
                 className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
               >
                 <Play className="h-4 w-4 mr-2" />
-                Play Now
+                Trailer
               </Button>
               <Button 
                 variant="outline" 
