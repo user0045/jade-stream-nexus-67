@@ -3,6 +3,7 @@ import { X, Play, Calendar, Star, User, Clapperboard, Users } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 
 interface InfoCardProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ const InfoCard = ({ isOpen, onClose, content }: InfoCardProps) => {
     }
   };
 
-  return (
+  const modalContent = (
     <div 
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-4"
       onClick={handleBackdropClick}
@@ -154,6 +155,9 @@ const InfoCard = ({ isOpen, onClose, content }: InfoCardProps) => {
       </div>
     </div>
   );
+
+  // Use createPortal to render the modal at the document body level
+  return createPortal(modalContent, document.body);
 };
 
 export default InfoCard;
