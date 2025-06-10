@@ -1,4 +1,3 @@
-
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
@@ -44,7 +43,7 @@ const SimplePremiumContentRow = ({
       
       // Show "See More" button when user reaches near the end
       const nearEnd = scrollPosition >= maxScroll * 0.7;
-      setShowSeeMore(nearEnd && onSeeMore);
+      setShowSeeMore(nearEnd && !!onSeeMore);
     };
 
     updateScrollState();
