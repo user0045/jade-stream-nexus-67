@@ -127,12 +127,12 @@ const UpcomingCard = ({
               </p>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex gap-3 relative z-10">
               <Button 
                 type="button"
                 size="sm" 
                 onClick={handleTrailer}
-                className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 cursor-pointer"
+                className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 cursor-pointer relative z-20"
               >
                 <Play className="h-4 w-4 mr-2" />
                 Trailer
@@ -142,7 +142,7 @@ const UpcomingCard = ({
                 variant="outline" 
                 size="sm"
                 onClick={handleMoreInfo}
-                className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300 cursor-pointer"
+                className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300 cursor-pointer relative z-20"
               >
                 <Info className="h-4 w-4 mr-2" />
                 More Info
