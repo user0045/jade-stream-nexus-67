@@ -45,7 +45,10 @@ const UpcomingCard = ({
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const handleTrailer = () => {
+  const handleTrailer = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Trailer button clicked for:", title);
     navigate('/player', { 
       state: { 
         videoUrl: trailerUrl || "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
@@ -56,7 +59,10 @@ const UpcomingCard = ({
     });
   };
 
-  const handleMoreInfo = () => {
+  const handleMoreInfo = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("More Info button clicked for:", title);
     setShowInfoCard(true);
   };
 
@@ -123,18 +129,20 @@ const UpcomingCard = ({
             
             <div className="flex gap-3">
               <Button 
+                type="button"
                 size="sm" 
                 onClick={handleTrailer}
-                className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
+                className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 cursor-pointer"
               >
                 <Play className="h-4 w-4 mr-2" />
                 Trailer
               </Button>
               <Button 
+                type="button"
                 variant="outline" 
                 size="sm"
                 onClick={handleMoreInfo}
-                className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300"
+                className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300 cursor-pointer"
               >
                 <Info className="h-4 w-4 mr-2" />
                 More Info
