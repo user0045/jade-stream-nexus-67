@@ -11,6 +11,7 @@ import Trending from "./pages/Trending";
 import MyList from "./pages/MyList";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import VideoPlayer from "./pages/VideoPlayer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
