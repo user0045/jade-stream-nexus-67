@@ -7,13 +7,12 @@ const AnalyticsDashboard = () => {
     { title: "Total Views", value: "15.2M", change: "+12%", icon: Eye },
     { title: "Watch Time", value: "890K hrs", change: "+18%", icon: PlayCircle },
     { title: "New Signups", value: "2,543", change: "+25%", icon: Users },
-    { title: "Revenue", value: "$89,432", change: "+15%", icon: TrendingUp },
   ];
 
   return (
     <div className="space-y-6">
       {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {analyticsData.map((stat) => {
           const IconComponent = stat.icon;
           return (
@@ -103,30 +102,6 @@ const AnalyticsDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Revenue Analytics */}
-      <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-foreground">Revenue Analytics</CardTitle>
-          <CardDescription>Monthly revenue breakdown</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">$89,432</div>
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">$67,234</div>
-              <p className="text-sm text-muted-foreground">Premium Subscriptions</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">$22,198</div>
-              <p className="text-sm text-muted-foreground">Ad Revenue</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
