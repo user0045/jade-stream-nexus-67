@@ -11,11 +11,13 @@ interface Movie {
   genre: string;
   rating: string;
   year: string;
+  type?: "movie" | "tv";
 }
 
 interface SimplePremiumContentRowProps {
   title: string;
   movies: Movie[];
+  contentType?: "movie" | "tv" | "all";
   onMoviePlay?: (id: number) => void;
   onMovieMoreInfo?: (id: number) => void;
   onSeeMore?: () => void;
@@ -24,6 +26,7 @@ interface SimplePremiumContentRowProps {
 const SimplePremiumContentRow = ({ 
   title, 
   movies, 
+  contentType = "all",
   onMoviePlay, 
   onMovieMoreInfo,
   onSeeMore 
@@ -46,11 +49,11 @@ const SimplePremiumContentRow = ({
       
       // Show "See More" button when user reaches near the end
       const nearEnd = scrollPosition >= maxScroll * 0.7;
-      setShowSeeMore(nearEnd && !!onSeeMore);
+      setShowSeeMore(nearEnd);
     };
 
     updateScrollState();
-  }, [scrollPosition, maxScroll, onSeeMore]);
+  }, [scrollPosition, maxScroll]);
 
   const scroll = (direction: 'left' | 'right') => {
     const scrollAmount = cardWidth * 2; // Scroll 2 cards at a time
@@ -65,7 +68,8 @@ const SimplePremiumContentRow = ({
     navigate('/see-more', {
       state: {
         title,
-        movies
+        movies,
+        contentType
       }
     });
   };

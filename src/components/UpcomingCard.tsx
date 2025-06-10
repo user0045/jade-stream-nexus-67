@@ -45,20 +45,15 @@ const UpcomingCard = ({
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const handlePlayTrailer = () => {
-    if (trailerUrl) {
-      window.open(trailerUrl, '_blank');
-    } else {
-      // Navigate to video player with trailer/preview content
-      navigate('/player', { 
-        state: { 
-          videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-          title: `${title} - Preview`,
-          description: `Preview of ${title}. ${description}`,
-          duration: "2h 30m"
-        } 
-      });
-    }
+  const handlePlay = () => {
+    navigate('/player', { 
+      state: { 
+        videoUrl: trailerUrl || "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+        title: `${title} - Preview`,
+        description: `Preview of ${title}. ${description}`,
+        duration: "2h 30m"
+      } 
+    });
   };
 
   const handleMoreInfo = () => {
@@ -129,20 +124,20 @@ const UpcomingCard = ({
             <div className="flex gap-3">
               <Button 
                 size="sm" 
-                onClick={handleMoreInfo}
+                onClick={handlePlay}
                 className="bg-green-700 hover:bg-green-600 text-white border-0 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
               >
-                <Info className="h-4 w-4 mr-2" />
-                More Info
+                <Play className="h-4 w-4 mr-2" />
+                Play Now
               </Button>
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={handlePlayTrailer}
+                onClick={handleMoreInfo}
                 className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300"
               >
-                <Play className="h-4 w-4 mr-2" />
-                {trailerUrl ? 'Watch Trailer' : 'Preview'}
+                <Info className="h-4 w-4 mr-2" />
+                More Info
               </Button>
             </div>
           </div>

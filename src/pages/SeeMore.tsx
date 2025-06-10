@@ -11,13 +11,31 @@ interface Movie {
   genre: string;
   rating: string;
   year: string;
+  type?: "movie" | "tv";
 }
 
 const SeeMore = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const { title, movies } = location.state || { title: "", movies: [] };
+  const { title, movies, contentType } = location.state || { title: "", movies: [], contentType: "all" };
+
+  // Filter movies based on content type
+  const filteredMovies = contentType === "all" 
+    ? movies 
+    : movies.filter((movie: Movie) => {
+        // If movie doesn't have type property, determine by ID ranges or other logic
+        if (!movie.type) {
+          // Movies have IDs 1-6, 13-18, 24-45
+          // TV Shows have IDs 7-12, 19-23, 36-54
+          const isMovie = (movie.id >= 1 && movie.id <= 6) || 
+                          (movie.id >= 13 && movie.id <= 18) || 
+                          (movie.id >= 24 && movie.id <= 35) ||
+                          (movie.id >= 36 && movie.id <= 45);
+          return contentType === "movie" ? isMovie : !isMovie;
+        }
+        return movie.type === contentType;
+      });
 
   const handleMovieAction = (movieId: number, action: string) => {
     console.log(`${action} movie with ID: ${movieId}`);
@@ -38,13 +56,16 @@ const SeeMore = () => {
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
-            <h1 className="text-4xl font-bold text-foreground">{title}</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              {title} {contentType === "movie" ? "- Movies" : contentType === "tv" ? "- TV Shows" : ""}
+            </h1>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {movies.map((movie: Movie) => (
+            {filteredMovies.map((movie: Movie) => (
               <SimpleMovieCard
                 key={movie.id}
+                id={movie.id}
                 title={movie.title}
                 genre={movie.genre}
                 rating={movie.rating}

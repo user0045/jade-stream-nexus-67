@@ -1,3 +1,4 @@
+
 import PremiumNavbar from "@/components/PremiumNavbar";
 import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 import HeroSlider from "@/components/HeroSlider";
@@ -213,47 +214,56 @@ const TVShows = () => {
         <div className="container mx-auto pb-12">
           <SimplePremiumContentRow 
             title="New Releases" 
-            movies={newReleases} 
+            movies={newReleases}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Popular" 
-            movies={popular} 
+            movies={popular}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Action & Adventure" 
-            movies={actionAdventure} 
+            movies={actionAdventure}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Comedy" 
-            movies={comedy} 
+            movies={comedy}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Crime" 
-            movies={crime} 
+            movies={crime}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Drama" 
-            movies={drama} 
+            movies={drama}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Horror" 
-            movies={horror} 
+            movies={horror}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Mystery & Thriller" 
-            movies={mysteryThriller} 
+            movies={mysteryThriller}
+            contentType="tv"
           />
           
           <SimplePremiumContentRow 
             title="Sci-Fi" 
-            movies={sciFi} 
+            movies={sciFi}
+            contentType="tv"
           />
         </div>
       </div>
