@@ -128,6 +128,7 @@ const Upcoming = () => {
                 key={content.id}
                 title={content.title}
                 genre={content.genre}
+                rating="PG-13"
                 releaseDate={content.releaseDate}
                 description={content.description}
                 type={content.type}
