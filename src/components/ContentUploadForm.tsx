@@ -19,6 +19,7 @@ interface Season {
   name: string;
   description: string;
   year: string;
+  imdbRating: string;
   tags: string[];
   cast: string[];
   directors: string[];
@@ -89,11 +90,13 @@ const ContentUploadForm = () => {
   };
 
   const addSeason = () => {
+    const newSeasonNumber = seasons.length + 1;
     const newSeason: Season = {
-      seasonNumber: seasons.length + 1,
-      name: `Season ${seasons.length + 1}`,
+      seasonNumber: newSeasonNumber,
+      name: `Season ${newSeasonNumber}`,
       description: "",
       year: "",
+      imdbRating: "",
       tags: [""],
       cast: [""],
       directors: [""],
@@ -113,7 +116,14 @@ const ContentUploadForm = () => {
   };
 
   const removeSeason = (seasonIndex: number) => {
-    setSeasons(seasons.filter((_, i) => i !== seasonIndex));
+    const updatedSeasons = seasons.filter((_, i) => i !== seasonIndex);
+    // Reorder season numbers to maintain sequential order
+    const reorderedSeasons = updatedSeasons.map((season, index) => ({
+      ...season,
+      seasonNumber: index + 1,
+      name: `Season ${index + 1}`
+    }));
+    setSeasons(reorderedSeasons);
   };
 
   // Season array handlers
@@ -154,8 +164,9 @@ const ContentUploadForm = () => {
 
   const addEpisode = (seasonIndex: number) => {
     const newSeasons = [...seasons];
+    const newEpisodeNumber = newSeasons[seasonIndex].episodes.length + 1;
     const newEpisode: Episode = {
-      episodeNumber: newSeasons[seasonIndex].episodes.length + 1,
+      episodeNumber: newEpisodeNumber,
       videoUrl: "",
       duration: ""
     };
@@ -171,7 +182,13 @@ const ContentUploadForm = () => {
 
   const removeEpisode = (seasonIndex: number, episodeIndex: number) => {
     const newSeasons = [...seasons];
-    newSeasons[seasonIndex].episodes = newSeasons[seasonIndex].episodes.filter((_, i) => i !== episodeIndex);
+    const updatedEpisodes = newSeasons[seasonIndex].episodes.filter((_, i) => i !== episodeIndex);
+    // Reorder episode numbers to maintain sequential order
+    const reorderedEpisodes = updatedEpisodes.map((episode, index) => ({
+      ...episode,
+      episodeNumber: index + 1
+    }));
+    newSeasons[seasonIndex].episodes = reorderedEpisodes;
     setSeasons(newSeasons);
   };
 
@@ -303,56 +320,115 @@ const ContentUploadForm = () => {
                   required
                 />
               </div>
+              {contentType === "movie" && (
+                <div>
+                  <Label className="text-sm font-medium text-foreground mb-2 block">Year *</Label>
+                  <Input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) => handleInputChange("year", e.target.value)}
+                    placeholder="2024"
+                    required
+                  />
+                </div>
+              )}
+            </div>
+
+            {contentType === "movie" && (
               <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block">Year *</Label>
-                <Input
-                  type="number"
-                  value={formData.year}
-                  onChange={(e) => handleInputChange("year", e.target.value)}
-                  placeholder="2024"
+                <Label className="text-sm font-medium text-foreground mb-2 block">Description *</Label>
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  placeholder={`Brief description of the ${contentType}`}
+                  rows={3}
                   required
                 />
               </div>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block">Description *</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
-                placeholder={`Brief description of the ${contentType}`}
-                rows={3}
-                required
-              />
-            </div>
+            )}
           </div>
 
-          {/* Classification */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Classification</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Classification - Only for Movies */}
+          {contentType === "movie" && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Classification</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-foreground mb-2 block">Genres *</Label>
+                  {formData.genres.map((genre, index) => (
+                    <div key={index} className="flex gap-2 mb-2">
+                      <select 
+                        value={genre}
+                        onChange={(e) => handleArrayChange("genres", index, e.target.value)}
+                        className="flex-1 px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        required={index === 0}
+                      >
+                        <option value="">Select Genre</option>
+                        {availableGenres.map(genreOption => (
+                          <option key={genreOption} value={genreOption}>{genreOption}</option>
+                        ))}
+                      </select>
+                      {formData.genres.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeArrayItem("genres", index)}
+                          className="px-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addArrayItem("genres")}
+                    className="mt-2"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Genre
+                  </Button>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+                    <Star className="h-4 w-4" />
+                    IMDb Rating
+                  </Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    value={formData.imdbRating}
+                    onChange={(e) => handleInputChange("imdbRating", e.target.value)}
+                    placeholder="9.3"
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block">Genres *</Label>
-                {formData.genres.map((genre, index) => (
+                <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  Tags
+                </Label>
+                {formData.tags.map((tag, index) => (
                   <div key={index} className="flex gap-2 mb-2">
-                    <select 
-                      value={genre}
-                      onChange={(e) => handleArrayChange("genres", index, e.target.value)}
-                      className="flex-1 px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                      required={index === 0}
-                    >
-                      <option value="">Select Genre</option>
-                      {availableGenres.map(genreOption => (
-                        <option key={genreOption} value={genreOption}>{genreOption}</option>
-                      ))}
-                    </select>
-                    {formData.genres.length > 1 && (
+                    <Input
+                      value={tag}
+                      onChange={(e) => handleArrayChange("tags", index, e.target.value)}
+                      placeholder="Enter tag"
+                      className="flex-1"
+                    />
+                    {formData.tags.length > 1 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => removeArrayItem("genres", index)}
+                        onClick={() => removeArrayItem("tags", index)}
                         className="px-2"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -364,68 +440,15 @@ const ContentUploadForm = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => addArrayItem("genres")}
+                  onClick={() => addArrayItem("tags")}
                   className="mt-2"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Genre
+                  Add Tag
                 </Button>
               </div>
-              <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
-                  <Star className="h-4 w-4" />
-                  IMDb Rating
-                </Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="10"
-                  value={formData.imdbRating}
-                  onChange={(e) => handleInputChange("imdbRating", e.target.value)}
-                  placeholder="9.3"
-                />
-              </div>
             </div>
-
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
-                <Tag className="h-4 w-4" />
-                Tags
-              </Label>
-              {formData.tags.map((tag, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <Input
-                    value={tag}
-                    onChange={(e) => handleArrayChange("tags", index, e.target.value)}
-                    placeholder="Enter tag"
-                    className="flex-1"
-                  />
-                  {formData.tags.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeArrayItem("tags", index)}
-                      className="px-2"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addArrayItem("tags")}
-                className="mt-2"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Tag
-              </Button>
-            </div>
-          </div>
+          )}
 
           {contentType === "movie" ? (
             <>
@@ -649,26 +672,7 @@ const ContentUploadForm = () => {
             </>
           ) : (
             <>
-              {/* TV Show Details */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">TV Show Details</h3>
-                
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">Status</Label>
-                  <select 
-                    value={formData.status}
-                    onChange={(e) => handleInputChange("status", e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="ongoing">Ongoing</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="upcoming">Upcoming</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Seasons Management */}
+              {/* Seasons Management for TV Shows */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold text-foreground">Seasons</h3>
@@ -699,7 +703,7 @@ const ContentUploadForm = () => {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <Label className="text-sm font-medium text-foreground mb-2 block">Season Name</Label>
                           <Input
@@ -715,6 +719,21 @@ const ContentUploadForm = () => {
                             value={season.year}
                             onChange={(e) => updateSeason(seasonIndex, "year", e.target.value)}
                             placeholder="2024"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+                            <Star className="h-4 w-4" />
+                            IMDb Rating
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            max="10"
+                            value={season.imdbRating}
+                            onChange={(e) => updateSeason(seasonIndex, "imdbRating", e.target.value)}
+                            placeholder="9.3"
                           />
                         </div>
                       </div>
