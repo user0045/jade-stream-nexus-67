@@ -44,7 +44,8 @@ const SimpleMovieCard = ({
     }
   };
 
-  const handleMoreInfo = () => {
+  const handleMoreInfo = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onMoreInfo) {
       onMoreInfo();
     }
@@ -102,18 +103,21 @@ const SimpleMovieCard = ({
         </div>
       </div>
 
-      <InfoCard
-        isOpen={showInfoCard}
-        onClose={() => setShowInfoCard(false)}
-        content={{
-          id,
-          title,
-          genre,
-          rating,
-          year,
-          videoUrl
-        }}
-      />
+      {showInfoCard && (
+        <InfoCard
+          isOpen={showInfoCard}
+          onClose={() => setShowInfoCard(false)}
+          content={{
+            id,
+            title,
+            genre,
+            rating,
+            year,
+            videoUrl,
+            description: `Experience the thrilling journey of ${title}. This ${genre.toLowerCase()} masterpiece delivers exceptional storytelling and unforgettable moments that will keep you on the edge of your seat.`
+          }}
+        />
+      )}
     </>
   );
 };

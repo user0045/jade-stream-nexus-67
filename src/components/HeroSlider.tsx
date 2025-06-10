@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import InfoCard from "./InfoCard";
 
 interface HeroContent {
@@ -18,10 +18,11 @@ interface HeroContent {
 
 const HeroSlider = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showInfoCard, setShowInfoCard] = useState(false);
 
-  const heroContents: HeroContent[] = [
+  const allHeroContents: HeroContent[] = [
     {
       id: 1,
       title: "The Crown",
@@ -71,8 +72,32 @@ const HeroSlider = () => {
       year: "2020",
       duration: "3 Seasons",
       background: "from-gray-900/40 via-slate-800/20 to-background"
+    },
+    {
+      id: 6,
+      title: "Oppenheimer",
+      description: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.",
+      genre: "Biography • Drama • History",
+      rating: "R",
+      year: "2023",
+      duration: "3h 0m",
+      background: "from-orange-900/40 via-red-800/20 to-background"
+    },
+    {
+      id: 7,
+      title: "Dune",
+      description: "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe.",
+      genre: "Sci-Fi • Adventure • Drama",
+      rating: "PG-13",
+      year: "2021",
+      duration: "2h 35m",
+      background: "from-blue-900/40 via-cyan-800/20 to-background"
     }
   ];
+
+  // Determine how many slides to show based on current page
+  const isHomePage = location.pathname === '/';
+  const heroContents = isHomePage ? allHeroContents : allHeroContents.slice(0, 5);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % heroContents.length);
@@ -85,7 +110,7 @@ const HeroSlider = () => {
   useEffect(() => {
     const timer = setInterval(nextSlide, 8000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroContents.length]);
 
   const currentContent = heroContents[currentSlide];
 
