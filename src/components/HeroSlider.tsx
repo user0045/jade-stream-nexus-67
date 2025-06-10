@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import InfoCard from "./InfoCard";
 
 interface HeroContent {
   id: number;
@@ -14,7 +16,9 @@ interface HeroContent {
 }
 
 const HeroSlider = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showInfoCard, setShowInfoCard] = useState(false);
 
   const heroContents: HeroContent[] = [
     {
@@ -104,87 +108,120 @@ const HeroSlider = () => {
 
   const currentContent = heroContents[currentSlide];
 
+  const handlePlay = () => {
+    navigate('/player', {
+      state: {
+        title: currentContent.title,
+        description: currentContent.description,
+        duration: currentContent.duration
+      }
+    });
+  };
+
+  const handleMoreInfo = () => {
+    setShowInfoCard(true);
+  };
+
   return (
-    <div className="relative h-[75vh] flex items-center justify-center overflow-hidden mb-16">
-      {/* Background gradient with smooth transitions */}
-      <div className={`absolute inset-0 bg-gradient-to-r ${currentContent.background} transition-all duration-1000 ease-in-out`}></div>
-      
-      {/* Navigation arrows */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-background/10 hover:bg-background/20 backdrop-blur-sm transition-all duration-300"
-        onClick={prevSlide}
-      >
-        <ChevronLeft className="h-8 w-8" />
-      </Button>
-      
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-background/10 hover:bg-background/20 backdrop-blur-sm transition-all duration-300"
-        onClick={nextSlide}
-      >
-        <ChevronRight className="h-8 w-8" />
-      </Button>
+    <>
+      <div className="relative h-[75vh] flex items-center justify-center overflow-hidden mb-16">
+        {/* Background gradient with smooth transitions */}
+        <div className={`absolute inset-0 bg-gradient-to-r ${currentContent.background} transition-all duration-1000 ease-in-out`}></div>
+        
+        {/* Navigation arrows */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-background/10 hover:bg-background/20 backdrop-blur-sm transition-all duration-300"
+          onClick={prevSlide}
+        >
+          <ChevronLeft className="h-8 w-8" />
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-background/10 hover:bg-background/20 backdrop-blur-sm transition-all duration-300"
+          onClick={nextSlide}
+        >
+          <ChevronRight className="h-8 w-8" />
+        </Button>
 
-      {/* Content */}
-      <div className="relative z-20 container mx-auto px-6">
-        <div className="max-w-2xl animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground leading-tight">
-            {currentContent.title}
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed max-w-xl">
-            {currentContent.description}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-2xl"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Play Now
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 px-8 py-3 rounded-lg transition-all duration-300 backdrop-blur-sm"
-            >
-              <Info className="mr-2 h-5 w-5" />
-              More Info
-            </Button>
-          </div>
+        {/* Content */}
+        <div className="relative z-20 container mx-auto px-6">
+          <div className="max-w-2xl animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground leading-tight">
+              {currentContent.title}
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed max-w-xl">
+              {currentContent.description}
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <Button 
+                size="lg" 
+                onClick={handlePlay}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-2xl"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Play Now
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={handleMoreInfo}
+                className="border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 px-8 py-3 rounded-lg transition-all duration-300 backdrop-blur-sm"
+              >
+                <Info className="mr-2 h-5 w-5" />
+                More Info
+              </Button>
+            </div>
 
-          {/* Meta information */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="bg-accent/80 px-3 py-1 rounded-lg backdrop-blur-sm">{currentContent.rating}</span>
-            <span>{currentContent.duration}</span>
-            <span>{currentContent.genre}</span>
-            <span className="text-primary font-semibold">★ {(8.1 + Math.random() * 1.8).toFixed(1)}</span>
+            {/* Meta information */}
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="bg-accent/80 px-3 py-1 rounded-lg backdrop-blur-sm">{currentContent.rating}</span>
+              <span>{currentContent.duration}</span>
+              <span>{currentContent.genre}</span>
+              <span className="text-primary font-semibold">★ {(8.1 + Math.random() * 1.8).toFixed(1)}</span>
+            </div>
           </div>
         </div>
+
+        {/* Slide indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+          {heroContents.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentSlide 
+                  ? "bg-primary shadow-lg shadow-primary/50" 
+                  : "bg-foreground/30 hover:bg-foreground/50"
+              }`}
+              onClick={() => setCurrentSlide(index)}
+            />
+          ))}
+        </div>
+        
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
       </div>
 
-      {/* Slide indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {heroContents.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide 
-                ? "bg-primary shadow-lg shadow-primary/50" 
-                : "bg-foreground/30 hover:bg-foreground/50"
-            }`}
-            onClick={() => setCurrentSlide(index)}
-          />
-        ))}
-      </div>
-      
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
-    </div>
+      <InfoCard
+        isOpen={showInfoCard}
+        onClose={() => setShowInfoCard(false)}
+        content={{
+          title: currentContent.title,
+          genre: currentContent.genre,
+          rating: currentContent.rating,
+          year: currentContent.year,
+          description: currentContent.description,
+          duration: currentContent.duration
+        }}
+      />
+    </>
   );
 };
 
 export default HeroSlider;
+
+}

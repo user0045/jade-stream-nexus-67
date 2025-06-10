@@ -1,9 +1,8 @@
-
 import { Calendar, Play, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import ContentDetailModal from "./ContentDetailModal";
+import InfoCard from "./InfoCard";
 
 interface UpcomingCardProps {
   title: string;
@@ -24,7 +23,7 @@ const UpcomingCard = ({
   thumbnailUrl,
   trailerUrl
 }: UpcomingCardProps) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showInfoCard, setShowInfoCard] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -53,7 +52,7 @@ const UpcomingCard = ({
   };
 
   const handleMoreInfo = () => {
-    setShowModal(true);
+    setShowInfoCard(true);
   };
 
   const releaseYear = new Date(releaseDate).getFullYear().toString();
@@ -140,9 +139,9 @@ const UpcomingCard = ({
         </div>
       </div>
 
-      <ContentDetailModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
+      <InfoCard
+        isOpen={showInfoCard}
+        onClose={() => setShowInfoCard(false)}
         content={{
           title,
           genre,

@@ -1,10 +1,12 @@
+
 import { Play, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ContentDetailModal from "./ContentDetailModal";
+import InfoCard from "./InfoCard";
 
 interface SimpleMovieCardProps {
+  id?: number;
   title: string;
   genre: string;
   rating: string;
@@ -15,6 +17,7 @@ interface SimpleMovieCardProps {
 }
 
 const SimpleMovieCard = ({ 
+  id,
   title, 
   genre, 
   rating, 
@@ -24,7 +27,7 @@ const SimpleMovieCard = ({
   onMoreInfo 
 }: SimpleMovieCardProps) => {
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  const [showInfoCard, setShowInfoCard] = useState(false);
 
   const handlePlay = () => {
     if (onPlay) {
@@ -45,7 +48,7 @@ const SimpleMovieCard = ({
     if (onMoreInfo) {
       onMoreInfo();
     }
-    setShowModal(true);
+    setShowInfoCard(true);
   };
 
   return (
@@ -99,10 +102,11 @@ const SimpleMovieCard = ({
         </div>
       </div>
 
-      <ContentDetailModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
+      <InfoCard
+        isOpen={showInfoCard}
+        onClose={() => setShowInfoCard(false)}
         content={{
+          id,
           title,
           genre,
           rating,
