@@ -71,26 +71,6 @@ const HeroSlider = () => {
       year: "2020",
       duration: "3 Seasons",
       background: "from-gray-900/40 via-slate-800/20 to-background"
-    },
-    {
-      id: 6,
-      title: "The Queen's Gambit",
-      description: "Orphaned at the tender age of nine, prodigious introvert Beth Harmon discovers and masters the game of chess in 1960s USA.",
-      genre: "Drama • Sport • Coming-of-age",
-      rating: "TV-MA",
-      year: "2020",
-      duration: "Limited Series",
-      background: "from-teal-900/40 via-cyan-800/20 to-background"
-    },
-    {
-      id: 7,
-      title: "Bridgerton",
-      description: "Wealth, lust, and betrayal set in the backdrop of Regency era England, seen through the eyes of the powerful Bridgerton family.",
-      genre: "Romance • Drama • Period",
-      rating: "TV-MA",
-      year: "2022",
-      duration: "2 Seasons",
-      background: "from-pink-900/40 via-rose-800/20 to-background"
     }
   ];
 

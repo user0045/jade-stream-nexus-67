@@ -1,3 +1,4 @@
+
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
@@ -114,12 +115,11 @@ const SimplePremiumContentRow = ({
           {movies.map((movie) => (
             <SimpleMovieCard
               key={movie.id}
+              id={movie.id}
               title={movie.title}
               genre={movie.genre}
               rating={movie.rating}
               year={movie.year}
-              onPlay={() => onMoviePlay?.(movie.id)}
-              onMoreInfo={() => onMovieMoreInfo?.(movie.id)}
             />
           ))}
         </div>

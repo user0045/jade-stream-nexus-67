@@ -203,15 +203,6 @@ const TVShows = () => {
   const mysteryThriller = getLatest11(item => item.genre.toLowerCase().includes('mystery') || item.genre.toLowerCase().includes('thriller'));
   const sciFi = getLatest11(item => item.genre.toLowerCase().includes('sci-fi'));
 
-  const handleShowAction = (showId: number, action: string) => {
-    console.log(`${action} TV show with ID: ${showId}`);
-  };
-
-  const handleSeeMore = (sectionTitle: string) => {
-    console.log(`See more for section: ${sectionTitle}`);
-    // TODO: Navigate to grid view page for this section
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <PremiumNavbar />
@@ -223,73 +214,46 @@ const TVShows = () => {
           <SimplePremiumContentRow 
             title="New Releases" 
             movies={newReleases} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("New Releases")} 
           />
           
           <SimplePremiumContentRow 
             title="Popular" 
             movies={popular} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Popular")} 
           />
           
           <SimplePremiumContentRow 
             title="Action & Adventure" 
             movies={actionAdventure} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Action & Adventure")} 
           />
           
           <SimplePremiumContentRow 
             title="Comedy" 
             movies={comedy} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Comedy")} 
           />
           
           <SimplePremiumContentRow 
             title="Crime" 
             movies={crime} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Crime")} 
           />
           
           <SimplePremiumContentRow 
             title="Drama" 
             movies={drama} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Drama")} 
           />
           
           <SimplePremiumContentRow 
             title="Horror" 
             movies={horror} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Horror")} 
           />
           
           <SimplePremiumContentRow 
             title="Mystery & Thriller" 
             movies={mysteryThriller} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Mystery & Thriller")} 
           />
           
           <SimplePremiumContentRow 
             title="Sci-Fi" 
             movies={sciFi} 
-            onMoviePlay={id => handleShowAction(id, "Play")} 
-            onMovieMoreInfo={id => handleShowAction(id, "More info")} 
-            onSeeMore={() => handleSeeMore("Sci-Fi")} 
           />
         </div>
       </div>
