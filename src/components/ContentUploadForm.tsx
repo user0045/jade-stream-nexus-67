@@ -5,8 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, Save, Image, Link, Film, Tv, Tag } from "lucide-react";
+import { Upload, Save, Image, Link, Film, Tv, Tag, Plus, Trash2, Star } from "lucide-react";
 import { toast } from "sonner";
+
+interface Episode {
+  episodeNumber: number;
+  title: string;
+  description: string;
+  duration: string;
+  videoUrl: string;
+}
+
+interface Season {
+  seasonNumber: number;
+  title: string;
+  description: string;
+  episodes: Episode[];
+  thumbnailUrl: string;
+  trailerUrl: string;
+}
 
 const ContentUploadForm = () => {
   const [contentType, setContentType] = useState("movie");
@@ -17,7 +34,7 @@ const ContentUploadForm = () => {
     year: "",
     rating: "",
     duration: "",
-    director: "",
+    directors: [""],
     cast: "",
     thumbnailUrl: "",
     videoUrl: "",
@@ -27,16 +44,35 @@ const ContentUploadForm = () => {
     writer: "",
     boxOffice: "",
     // TV Show specific
-    seasons: "",
-    episodes: "",
+    totalSeasons: "",
+    totalEpisodes: "",
     status: "ongoing",
     network: "",
     // Feature control
     featuredSections: [] as string[]
   });
 
+  const [seasons, setSeasons] = useState<Season[]>([]);
+
   const handleInputChange = (field: string, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleDirectorChange = (index: number, value: string) => {
+    const newDirectors = [...formData.directors];
+    newDirectors[index] = value;
+    handleInputChange("directors", newDirectors);
+  };
+
+  const addDirector = () => {
+    handleInputChange("directors", [...formData.directors, ""]);
+  };
+
+  const removeDirector = (index: number) => {
+    if (formData.directors.length > 1) {
+      const newDirectors = formData.directors.filter((_, i) => i !== index);
+      handleInputChange("directors", newDirectors);
+    }
   };
 
   const handleSectionToggle = (section: string) => {
@@ -47,6 +83,54 @@ const ContentUploadForm = () => {
     handleInputChange("featuredSections", updatedSections);
   };
 
+  const addSeason = () => {
+    const newSeason: Season = {
+      seasonNumber: seasons.length + 1,
+      title: `Season ${seasons.length + 1}`,
+      description: "",
+      episodes: [],
+      thumbnailUrl: "",
+      trailerUrl: ""
+    };
+    setSeasons([...seasons, newSeason]);
+  };
+
+  const updateSeason = (seasonIndex: number, field: keyof Season, value: string) => {
+    const newSeasons = [...seasons];
+    if (field === 'episodes') return; // Episodes handled separately
+    (newSeasons[seasonIndex] as any)[field] = value;
+    setSeasons(newSeasons);
+  };
+
+  const removeSeason = (seasonIndex: number) => {
+    setSeasons(seasons.filter((_, i) => i !== seasonIndex));
+  };
+
+  const addEpisode = (seasonIndex: number) => {
+    const newSeasons = [...seasons];
+    const newEpisode: Episode = {
+      episodeNumber: newSeasons[seasonIndex].episodes.length + 1,
+      title: "",
+      description: "",
+      duration: "",
+      videoUrl: ""
+    };
+    newSeasons[seasonIndex].episodes.push(newEpisode);
+    setSeasons(newSeasons);
+  };
+
+  const updateEpisode = (seasonIndex: number, episodeIndex: number, field: keyof Episode, value: string | number) => {
+    const newSeasons = [...seasons];
+    (newSeasons[seasonIndex].episodes[episodeIndex] as any)[field] = value;
+    setSeasons(newSeasons);
+  };
+
+  const removeEpisode = (seasonIndex: number, episodeIndex: number) => {
+    const newSeasons = [...seasons];
+    newSeasons[seasonIndex].episodes = newSeasons[seasonIndex].episodes.filter((_, i) => i !== episodeIndex);
+    setSeasons(newSeasons);
+  };
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -55,7 +139,7 @@ const ContentUploadForm = () => {
       year: "",
       rating: "",
       duration: "",
-      director: "",
+      directors: [""],
       cast: "",
       thumbnailUrl: "",
       videoUrl: "",
@@ -63,23 +147,41 @@ const ContentUploadForm = () => {
       tags: "",
       writer: "",
       boxOffice: "",
-      seasons: "",
-      episodes: "",
+      totalSeasons: "",
+      totalEpisodes: "",
       status: "ongoing",
       network: "",
       featuredSections: []
     });
+    setSeasons([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.videoUrl || !formData.thumbnailUrl) {
+    if (!formData.title || !formData.thumbnailUrl) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    console.log("Content data:", { ...formData, type: contentType });
+    if (contentType === "movie" && !formData.videoUrl) {
+      toast.error("Please provide a video URL for the movie");
+      return;
+    }
+
+    if (contentType === "tv-show" && seasons.length === 0) {
+      toast.error("Please add at least one season for the TV show");
+      return;
+    }
+
+    const contentData = {
+      ...formData,
+      type: contentType,
+      directors: formData.directors.filter(d => d.trim() !== ""),
+      ...(contentType === "tv-show" && { seasons })
+    };
+
+    console.log("Content data:", contentData);
     toast.success(`${contentType === "movie" ? "Movie" : "TV Show"} uploaded successfully!`);
     resetForm();
   };
@@ -174,11 +276,11 @@ const ContentUploadForm = () => {
             </div>
           </div>
 
-          {/* Genre and Rating */}
+          {/* Genre, Rating and Classification */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">Classification</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label className="text-sm font-medium text-foreground mb-2 block">Genre *</Label>
                 <select 
@@ -203,7 +305,7 @@ const ContentUploadForm = () => {
                 </select>
               </div>
               <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block">Rating *</Label>
+                <Label className="text-sm font-medium text-foreground mb-2 block">Content Rating *</Label>
                 <select 
                   value={formData.rating}
                   onChange={(e) => handleInputChange("rating", e.target.value)}
@@ -218,6 +320,21 @@ const ContentUploadForm = () => {
                   <option value="TV-14">TV-14</option>
                   <option value="TV-MA">TV-MA</option>
                 </select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+                  <Star className="h-4 w-4" />
+                  IMDb Rating
+                </Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="10"
+                  value={formData.rating}
+                  onChange={(e) => handleInputChange("rating", e.target.value)}
+                  placeholder="9.3"
+                />
               </div>
             </div>
 
@@ -239,13 +356,38 @@ const ContentUploadForm = () => {
             <h3 className="text-lg font-semibold text-foreground">Cast & Crew</h3>
             
             <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block">Director *</Label>
-              <Input
-                value={formData.director}
-                onChange={(e) => handleInputChange("director", e.target.value)}
-                placeholder="Director name"
-                required
-              />
+              <Label className="text-sm font-medium text-foreground mb-2 block">Directors *</Label>
+              {formData.directors.map((director, index) => (
+                <div key={index} className="flex gap-2 mb-2">
+                  <Input
+                    value={director}
+                    onChange={(e) => handleDirectorChange(index, e.target.value)}
+                    placeholder="Director name"
+                    required={index === 0}
+                  />
+                  {formData.directors.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeDirector(index)}
+                      className="px-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addDirector}
+                className="mt-2"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Director
+              </Button>
             </div>
 
             {contentType === "movie" && (
@@ -295,75 +437,214 @@ const ContentUploadForm = () => {
                   />
                 </div>
               </div>
+
+              <div>
+                <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+                  <Link className="h-4 w-4" />
+                  Movie Video URL *
+                </Label>
+                <Input
+                  type="url"
+                  value={formData.videoUrl}
+                  onChange={(e) => handleInputChange("videoUrl", e.target.value)}
+                  placeholder="https://example.com/movie.mp4"
+                  required
+                />
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">TV Show Details</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">Seasons *</Label>
-                  <Input
-                    type="number"
-                    value={formData.seasons}
-                    onChange={(e) => handleInputChange("seasons", e.target.value)}
-                    placeholder="3"
-                    required
-                  />
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">TV Show Details</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-foreground mb-2 block">Status</Label>
+                    <select 
+                      value={formData.status}
+                      onChange={(e) => handleInputChange("status", e.target.value)}
+                      className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="ongoing">Ongoing</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="upcoming">Upcoming</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-foreground mb-2 block">Network/Platform</Label>
+                    <Input
+                      value={formData.network}
+                      onChange={(e) => handleInputChange("network", e.target.value)}
+                      placeholder="Netflix, HBO, BBC, etc."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">Episodes *</Label>
-                  <Input
-                    type="number"
-                    value={formData.episodes}
-                    onChange={(e) => handleInputChange("episodes", e.target.value)}
-                    placeholder="24"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">Status</Label>
-                  <select 
-                    value={formData.status}
-                    onChange={(e) => handleInputChange("status", e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              </div>
+
+              {/* Seasons Management */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-foreground">Seasons & Episodes</h3>
+                  <Button
+                    type="button"
+                    onClick={addSeason}
+                    variant="outline"
+                    size="sm"
                   >
-                    <option value="ongoing">Ongoing</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="upcoming">Upcoming</option>
-                  </select>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Season
+                  </Button>
                 </div>
-              </div>
 
-              <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block">Network/Platform</Label>
-                <Input
-                  value={formData.network}
-                  onChange={(e) => handleInputChange("network", e.target.value)}
-                  placeholder="Netflix, HBO, BBC, etc."
-                />
-              </div>
+                {seasons.map((season, seasonIndex) => (
+                  <Card key={seasonIndex} className="border border-primary/20">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-base">Season {season.seasonNumber}</CardTitle>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeSeason(seasonIndex)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Season Title</Label>
+                          <Input
+                            value={season.title}
+                            onChange={(e) => updateSeason(seasonIndex, "title", e.target.value)}
+                            placeholder={`Season ${season.seasonNumber}`}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Season Description</Label>
+                          <Input
+                            value={season.description}
+                            onChange={(e) => updateSeason(seasonIndex, "description", e.target.value)}
+                            placeholder="Season description"
+                          />
+                        </div>
+                      </div>
 
-              <div>
-                <Label className="text-sm font-medium text-foreground mb-2 block">Episode Duration</Label>
-                <Input
-                  value={formData.duration}
-                  onChange={(e) => handleInputChange("duration", e.target.value)}
-                  placeholder="45 min per episode"
-                />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Season Thumbnail URL</Label>
+                          <Input
+                            type="url"
+                            value={season.thumbnailUrl}
+                            onChange={(e) => updateSeason(seasonIndex, "thumbnailUrl", e.target.value)}
+                            placeholder="https://example.com/season-thumbnail.jpg"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Season Trailer URL</Label>
+                          <Input
+                            type="url"
+                            value={season.trailerUrl}
+                            onChange={(e) => updateSeason(seasonIndex, "trailerUrl", e.target.value)}
+                            placeholder="https://example.com/season-trailer.mp4"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Episodes */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium text-foreground">Episodes</h4>
+                          <Button
+                            type="button"
+                            onClick={() => addEpisode(seasonIndex)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Episode
+                          </Button>
+                        </div>
+
+                        {season.episodes.map((episode, episodeIndex) => (
+                          <Card key={episodeIndex} className="border border-muted">
+                            <CardContent className="pt-4">
+                              <div className="flex justify-between items-start mb-3">
+                                <h5 className="font-medium text-sm">Episode {episode.episodeNumber}</h5>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removeEpisode(seasonIndex, episodeIndex)}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                  <Label className="text-xs font-medium text-foreground mb-1 block">Episode Title</Label>
+                                  <Input
+                                    value={episode.title}
+                                    onChange={(e) => updateEpisode(seasonIndex, episodeIndex, "title", e.target.value)}
+                                    placeholder="Episode title"
+                                    className="h-8 text-sm"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs font-medium text-foreground mb-1 block">Duration</Label>
+                                  <Input
+                                    value={episode.duration}
+                                    onChange={(e) => updateEpisode(seasonIndex, episodeIndex, "duration", e.target.value)}
+                                    placeholder="45 min"
+                                    className="h-8 text-sm"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div className="mt-3">
+                                <Label className="text-xs font-medium text-foreground mb-1 block">Episode Description</Label>
+                                <Input
+                                  value={episode.description}
+                                  onChange={(e) => updateEpisode(seasonIndex, episodeIndex, "description", e.target.value)}
+                                  placeholder="Episode description"
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              
+                              <div className="mt-3">
+                                <Label className="text-xs font-medium text-foreground mb-1 block">Video URL *</Label>
+                                <Input
+                                  type="url"
+                                  value={episode.videoUrl}
+                                  onChange={(e) => updateEpisode(seasonIndex, episodeIndex, "videoUrl", e.target.value)}
+                                  placeholder="https://example.com/episode.mp4"
+                                  className="h-8 text-sm"
+                                  required
+                                />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           )}
 
-          {/* Media URLs */}
+          {/* Media URLs for both types */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">Media Links</h3>
             
             <div>
               <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
                 <Image className="h-4 w-4" />
-                Thumbnail URL *
+                {contentType === "movie" ? "Movie" : "Show"} Thumbnail URL *
               </Label>
               <Input
                 type="url"
@@ -376,22 +657,8 @@ const ContentUploadForm = () => {
 
             <div>
               <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
-                <Link className="h-4 w-4" />
-                Main Video URL *
-              </Label>
-              <Input
-                type="url"
-                value={formData.videoUrl}
-                onChange={(e) => handleInputChange("videoUrl", e.target.value)}
-                placeholder="https://example.com/video.mp4"
-                required
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
                 <Film className="h-4 w-4" />
-                Trailer URL
+                {contentType === "movie" ? "Movie" : "Show"} Trailer URL
               </Label>
               <Input
                 type="url"
