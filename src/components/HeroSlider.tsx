@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -106,7 +105,7 @@ const HeroSlider = () => {
   const currentContent = heroContents[currentSlide];
 
   return (
-    <div className="relative h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative h-[75vh] flex items-center justify-center overflow-hidden mb-16">
       {/* Background gradient with smooth transitions */}
       <div className={`absolute inset-0 bg-gradient-to-r ${currentContent.background} transition-all duration-1000 ease-in-out`}></div>
       
@@ -130,36 +129,36 @@ const HeroSlider = () => {
       </Button>
 
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4">
-        <div className="max-w-3xl animate-fade-in">
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 text-foreground leading-tight">
+      <div className="relative z-20 container mx-auto px-6">
+        <div className="max-w-2xl animate-fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground leading-tight">
             {currentContent.title}
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-2xl">
+          <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed max-w-xl">
             {currentContent.description}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <Button 
               size="lg" 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-10 py-4 rounded-lg transition-all duration-300 hover:scale-105 shadow-2xl"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-2xl"
             >
-              <Play className="mr-3 h-6 w-6" />
+              <Play className="mr-2 h-5 w-5" />
               Play Now
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 px-10 py-4 rounded-lg transition-all duration-300 backdrop-blur-sm"
+              className="border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 px-8 py-3 rounded-lg transition-all duration-300 backdrop-blur-sm"
             >
-              <Info className="mr-3 h-6 w-6" />
+              <Info className="mr-2 h-5 w-5" />
               More Info
             </Button>
           </div>
 
           {/* Meta information */}
-          <div className="flex items-center gap-6 text-lg text-muted-foreground">
-            <span className="bg-accent/80 px-4 py-2 rounded-lg backdrop-blur-sm">{currentContent.rating}</span>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span className="bg-accent/80 px-3 py-1 rounded-lg backdrop-blur-sm">{currentContent.rating}</span>
             <span>{currentContent.duration}</span>
             <span>{currentContent.genre}</span>
             <span className="text-primary font-semibold">★ {(8.1 + Math.random() * 1.8).toFixed(1)}</span>
@@ -168,11 +167,11 @@ const HeroSlider = () => {
       </div>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
         {heroContents.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
               index === currentSlide 
                 ? "bg-primary shadow-lg shadow-primary/50" 
                 : "bg-foreground/30 hover:bg-foreground/50"
@@ -183,7 +182,7 @@ const HeroSlider = () => {
       </div>
       
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
     </div>
   );
 };

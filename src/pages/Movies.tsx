@@ -1,6 +1,6 @@
-
 import PremiumNavbar from "@/components/PremiumNavbar";
 import PremiumContentRow from "@/components/PremiumContentRow";
+import MovieHero from "@/components/MovieHero";
 
 const Movies = () => {
   const actionMovies = [
@@ -38,10 +38,18 @@ const Movies = () => {
     <div className="min-h-screen bg-background">
       <PremiumNavbar />
       
-      <div className="pt-24 pb-12">
-        <div className="container mx-auto">
-          <h1 className="text-5xl font-bold text-foreground mb-12 px-6">Movies</h1>
-          
+      <div className="pt-20">
+        <MovieHero
+          title="Dune: Part Two"
+          description="Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family."
+          genre="Sci-Fi • Adventure • Drama"
+          rating="PG-13"
+          year="2024"
+          duration="2h 46m"
+          background="from-orange-900/40 via-amber-800/20 to-background"
+        />
+        
+        <div className="container mx-auto pb-12">
           <PremiumContentRow 
             title="Action & Adventure" 
             movies={actionMovies}

@@ -10,6 +10,7 @@ import TVShows from "./pages/TVShows";
 import Trending from "./pages/Trending";
 import MyList from "./pages/MyList";
 import Profile from "./pages/Profile";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/trending" element={<Trending />} />
           <Route path="/my-list" element={<MyList />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

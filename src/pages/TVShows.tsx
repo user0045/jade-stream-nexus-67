@@ -1,6 +1,6 @@
-
 import PremiumNavbar from "@/components/PremiumNavbar";
 import PremiumContentRow from "@/components/PremiumContentRow";
+import MovieHero from "@/components/MovieHero";
 
 const TVShows = () => {
   const trendingShows = [
@@ -38,10 +38,18 @@ const TVShows = () => {
     <div className="min-h-screen bg-background">
       <PremiumNavbar />
       
-      <div className="pt-24 pb-12">
-        <div className="container mx-auto">
-          <h1 className="text-5xl font-bold text-foreground mb-12 px-6">TV Shows</h1>
-          
+      <div className="pt-20">
+        <MovieHero
+          title="The Last of Us"
+          description="Twenty years after modern civilization has been destroyed, Joel must smuggle Ellie out of an oppressive quarantine zone."
+          genre="Drama • Horror • Thriller"
+          rating="TV-MA"
+          year="2023"
+          duration="Season 1"
+          background="from-red-900/40 via-orange-800/20 to-background"
+        />
+        
+        <div className="container mx-auto pb-12">
           <PremiumContentRow 
             title="Trending Now" 
             movies={trendingShows}

@@ -56,8 +56,8 @@ const PremiumContentRow = ({
   };
 
   return (
-    <div className="mb-12 animate-fade-in">
-      <h2 className="text-3xl font-bold text-foreground mb-6 px-6">{title}</h2>
+    <div className="mb-16 animate-fade-in">
+      <h2 className="text-xl font-bold text-foreground mb-6 px-6">{title}</h2>
       
       <div className="relative group/row">
         {/* Left scroll button */}
@@ -87,7 +87,7 @@ const PremiumContentRow = ({
         {/* Scrollable container */}
         <div
           ref={containerRef}
-          className="flex gap-6 overflow-x-auto scrollbar-hide px-6 py-4"
+          className="flex gap-4 overflow-x-auto scrollbar-hide px-6 py-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onScroll={checkScrollButtons}
         >
