@@ -1,5 +1,6 @@
+
 import PremiumNavbar from "@/components/PremiumNavbar";
-import PremiumContentRow from "@/components/PremiumContentRow";
+import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 import MovieHero from "@/components/MovieHero";
 
 const TVShows = () => {
@@ -50,30 +51,24 @@ const TVShows = () => {
         />
         
         <div className="container mx-auto pb-12">
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="Trending Now" 
             movies={trendingShows}
             onMoviePlay={(id) => handleShowAction(id, "Play")}
-            onMovieAddToList={(id) => handleShowAction(id, "Add to list")}
-            onMovieLike={(id) => handleShowAction(id, "Like")}
             onMovieMoreInfo={(id) => handleShowAction(id, "More info")}
           />
           
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="Crime & Thriller" 
             movies={crimeShows}
             onMoviePlay={(id) => handleShowAction(id, "Play")}
-            onMovieAddToList={(id) => handleShowAction(id, "Add to list")}
-            onMovieLike={(id) => handleShowAction(id, "Like")}
             onMovieMoreInfo={(id) => handleShowAction(id, "More info")}
           />
           
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="Comedy Series" 
             movies={comedyShows}
             onMoviePlay={(id) => handleShowAction(id, "Play")}
-            onMovieAddToList={(id) => handleShowAction(id, "Add to list")}
-            onMovieLike={(id) => handleShowAction(id, "Like")}
             onMovieMoreInfo={(id) => handleShowAction(id, "More info")}
           />
         </div>

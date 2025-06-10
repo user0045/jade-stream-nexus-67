@@ -1,173 +1,141 @@
 
 import { useState } from "react";
 import { 
-  Users, 
-  PlayCircle, 
-  BarChart3, 
-  Settings, 
-  Shield, 
   Upload, 
-  Edit3, 
-  Trash2, 
-  Eye, 
-  Plus,
-  Search,
-  Filter,
-  Download,
-  UserCheck,
-  UserX,
-  Crown
+  BarChart3, 
+  PlayCircle
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
-import AdminSidebar from "@/components/AdminSidebar";
 import ContentManagement from "@/components/ContentManagement";
-import UserManagement from "@/components/UserManagement";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("upload");
 
   const renderContent = () => {
     switch (activeTab) {
-      case "dashboard":
-        return <DashboardOverview />;
-      case "content":
+      case "upload":
+        return <ContentUpload />;
+      case "manage":
         return <ContentManagement />;
-      case "users":
-        return <UserManagement />;
       case "analytics":
         return <AnalyticsDashboard />;
-      case "settings":
-        return <AdminSettings />;
       default:
-        return <DashboardOverview />;
+        return <ContentUpload />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 p-8 ml-64">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your streaming platform</p>
-          </div>
-          {renderContent()}
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Content Admin</h1>
+          <p className="text-muted-foreground">Upload, manage and analyze your content</p>
         </div>
-      </main>
-    </div>
-  );
-};
 
-const DashboardOverview = () => {
-  const stats = [
-    { title: "Total Users", value: "12,543", change: "+12%", icon: Users },
-    { title: "Active Content", value: "1,234", change: "+5%", icon: PlayCircle },
-    { title: "Monthly Revenue", value: "$89,432", change: "+18%", icon: BarChart3 },
-    { title: "Premium Users", value: "8,765", change: "+23%", icon: Crown },
-  ];
+        {/* Navigation Tabs */}
+        <div className="flex gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab("upload")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${
+              activeTab === "upload" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-card/50 text-foreground hover:bg-accent"
+            }`}
+          >
+            <Upload className="h-4 w-4" />
+            Upload Content
+          </button>
+          <button
+            onClick={() => setActiveTab("manage")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${
+              activeTab === "manage" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-card/50 text-foreground hover:bg-accent"
+            }`}
+          >
+            <PlayCircle className="h-4 w-4" />
+            Manage Content
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${
+              activeTab === "analytics" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-card/50 text-foreground hover:bg-accent"
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </button>
+        </div>
 
-  return (
-    <div className="space-y-8">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => {
-          const IconComponent = stat.icon;
-          return (
-            <Card key={stat.title} className="bg-card/50 backdrop-blur-sm border-primary/20">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <IconComponent className="h-4 w-4 text-primary" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                <p className="text-xs text-primary">{stat.change} from last month</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-          <CardHeader>
-            <CardTitle className="text-foreground">Recent Content Uploads</CardTitle>
-            <CardDescription>Latest content added to the platform</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {["The Dark Knight Returns", "Stranger Things S5", "Avatar: The Last Airbender", "Breaking Bad: El Camino"].map((title, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-foreground">{title}</span>
-                  <span className="text-xs text-muted-foreground">2 hours ago</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-          <CardHeader>
-            <CardTitle className="text-foreground">User Activity</CardTitle>
-            <CardDescription>Recent user registrations and activity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {["John Doe registered", "Premium subscription activated", "Sarah Johnson logged in", "New content watched"].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-foreground">{activity}</span>
-                  <span className="text-xs text-muted-foreground">5 min ago</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {renderContent()}
       </div>
     </div>
   );
 };
 
-const AdminSettings = () => {
+const ContentUpload = () => {
   return (
     <div className="space-y-8">
       <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
         <CardHeader>
-          <CardTitle className="text-foreground">Platform Settings</CardTitle>
-          <CardDescription>Configure your streaming platform</CardDescription>
+          <CardTitle className="text-foreground">Upload New Content</CardTitle>
+          <CardDescription>Add movies and TV shows to your platform</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Upload Video Files</h3>
+            <p className="text-muted-foreground mb-4">Drag and drop your video files here or click to browse</p>
+            <input type="file" accept="video/*" multiple className="hidden" id="video-upload" />
+            <label htmlFor="video-upload" className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg cursor-pointer inline-block transition-colors">
+              Select Files
+            </label>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="text-sm font-medium text-foreground">Platform Name</label>
-              <Input defaultValue="StreamFlix" className="mt-1" />
+              <label className="text-sm font-medium text-foreground mb-2 block">Title</label>
+              <input className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Content title" />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground">Support Email</label>
-              <Input defaultValue="support@streamflix.com" className="mt-1" />
+              <label className="text-sm font-medium text-foreground mb-2 block">Genre</label>
+              <select className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                <option>Action</option>
+                <option>Comedy</option>
+                <option>Drama</option>
+                <option>Horror</option>
+                <option>Sci-Fi</option>
+                <option>Romance</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Year</label>
+              <input type="number" className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="2024" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Rating</label>
+              <select className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                <option>G</option>
+                <option>PG</option>
+                <option>PG-13</option>
+                <option>R</option>
+                <option>TV-14</option>
+                <option>TV-MA</option>
+              </select>
             </div>
           </div>
-          <Separator className="bg-border" />
+          
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Security Settings</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground">Two-Factor Authentication</span>
-                <Button variant="outline" size="sm">Configure</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground">API Rate Limiting</span>
-                <Button variant="outline" size="sm">Manage</Button>
-              </div>
-            </div>
+            <label className="text-sm font-medium text-foreground mb-2 block">Description</label>
+            <textarea className="w-full px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary h-24" placeholder="Content description..."></textarea>
           </div>
+          
+          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg font-medium transition-colors">
+            Upload Content
+          </button>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Search, Bell, User, Menu, X, Home, Play, Bookmark, TrendingUp } from "lucide-react";
+import { Search, Menu, X, Home, Play, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,6 @@ const PremiumNavbar = () => {
     { name: "Movies", path: "/movies", icon: Play },
     { name: "TV Shows", path: "/tv-shows", icon: Play },
     { name: "Trending", path: "/trending", icon: TrendingUp },
-    { name: "My List", path: "/my-list", icon: Bookmark },
   ];
 
   return (
@@ -72,24 +71,6 @@ const PremiumNavbar = () => {
                 </div>
               )}
             </div>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="hover:bg-primary/20 transition-all duration-300 relative"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></span>
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="hover:bg-primary/20 transition-all duration-300"
-              onClick={() => navigate("/profile")}
-            >
-              <User className="h-5 w-5" />
-            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -127,12 +108,6 @@ const PremiumNavbar = () => {
               <div className="flex items-center space-x-4 pt-4 border-t border-primary/20">
                 <Button variant="ghost" size="icon" className="hover:bg-primary/20">
                   <Search className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="hover:bg-primary/20">
-                  <Bell className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="hover:bg-primary/20">
-                  <User className="h-5 w-5" />
                 </Button>
               </div>
             </div>

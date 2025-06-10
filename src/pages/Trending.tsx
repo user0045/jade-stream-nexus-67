@@ -1,6 +1,6 @@
 
 import PremiumNavbar from "@/components/PremiumNavbar";
-import PremiumContentRow from "@/components/PremiumContentRow";
+import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 
 const Trending = () => {
   const todayTrending = [
@@ -42,30 +42,24 @@ const Trending = () => {
         <div className="container mx-auto">
           <h1 className="text-5xl font-bold text-foreground mb-12 px-6">Trending</h1>
           
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="Trending Today" 
             movies={todayTrending}
             onMoviePlay={(id) => handleContentAction(id, "Play")}
-            onMovieAddToList={(id) => handleContentAction(id, "Add to list")}
-            onMovieLike={(id) => handleContentAction(id, "Like")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
           />
           
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="Trending This Week" 
             movies={weekTrending}
             onMoviePlay={(id) => handleContentAction(id, "Play")}
-            onMovieAddToList={(id) => handleContentAction(id, "Add to list")}
-            onMovieLike={(id) => handleContentAction(id, "Like")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
           />
           
-          <PremiumContentRow 
+          <SimplePremiumContentRow 
             title="All-Time Favorites" 
             movies={allTimeTrending}
             onMoviePlay={(id) => handleContentAction(id, "Play")}
-            onMovieAddToList={(id) => handleContentAction(id, "Add to list")}
-            onMovieLike={(id) => handleContentAction(id, "Like")}
             onMovieMoreInfo={(id) => handleContentAction(id, "More info")}
           />
         </div>
