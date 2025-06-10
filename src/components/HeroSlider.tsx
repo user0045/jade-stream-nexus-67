@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -223,5 +224,3 @@ const HeroSlider = () => {
 };
 
 export default HeroSlider;
-
-}
