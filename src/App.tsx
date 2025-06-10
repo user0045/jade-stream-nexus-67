@@ -29,7 +29,6 @@ const App = () => (
           <Route path="/see-more" element={<SeeMore />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/player" element={<VideoPlayer />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

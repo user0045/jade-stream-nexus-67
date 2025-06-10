@@ -20,14 +20,26 @@ const SeeMore = () => {
   
   const { title, movies, contentType } = location.state || { title: "", movies: [], contentType: "all" };
 
+  // Get content from admin uploads if movies array is empty
+  const getContentFromAdmin = (): Movie[] => {
+    const storedContent = JSON.parse(localStorage.getItem("contentLibrary") || "[]");
+    return storedContent.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      genre: item.genre,
+      rating: item.rating,
+      year: item.uploadDate ? new Date(item.uploadDate).getFullYear().toString() : "2024",
+      type: item.type === "Movie" ? "movie" as const : "tv" as const
+    })).filter((item: Movie) => item.title);
+  };
+
+  const contentToUse = movies.length > 0 ? movies : getContentFromAdmin();
+
   // Filter movies based on content type
   const filteredMovies = contentType === "all" 
-    ? movies 
-    : movies.filter((movie: Movie) => {
-        // If movie doesn't have type property, determine by ID ranges or other logic
+    ? contentToUse 
+    : contentToUse.filter((movie: Movie) => {
         if (!movie.type) {
-          // Movies have IDs 1-6, 13-18, 24-45
-          // TV Shows have IDs 7-12, 19-23, 36-54
           const isMovie = (movie.id >= 1 && movie.id <= 6) || 
                           (movie.id >= 13 && movie.id <= 18) || 
                           (movie.id >= 24 && movie.id <= 35) ||
@@ -41,7 +53,6 @@ const SeeMore = () => {
     console.log(`${action} movie with ID: ${movieId}`);
   };
 
-  // Format title to have only first letter of each word capitalized
   const formatTitle = (text: string) => {
     return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
   };

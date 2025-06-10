@@ -38,8 +38,8 @@ const SimplePremiumContentRow = ({
   const [showSeeMore, setShowSeeMore] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const cardWidth = 290; // Width of each card including gap
-  const visibleCards = 4; // Number of cards visible at once
+  const cardWidth = 290;
+  const visibleCards = 4;
   const maxScroll = Math.max(0, (movies.length * cardWidth) - (visibleCards * cardWidth));
 
   useEffect(() => {
@@ -47,16 +47,15 @@ const SimplePremiumContentRow = ({
       setCanScrollLeft(scrollPosition > 0);
       setCanScrollRight(scrollPosition < maxScroll);
       
-      // Show "See More" button when user reaches near the end
       const nearEnd = scrollPosition >= maxScroll * 0.7;
-      setShowSeeMore(nearEnd);
+      setShowSeeMore(nearEnd && movies.length > visibleCards);
     };
 
     updateScrollState();
-  }, [scrollPosition, maxScroll]);
+  }, [scrollPosition, maxScroll, movies.length, visibleCards]);
 
   const scroll = (direction: 'left' | 'right') => {
-    const scrollAmount = cardWidth * 2; // Scroll 2 cards at a time
+    const scrollAmount = cardWidth * 2;
     const newPosition = direction === 'left' 
       ? Math.max(0, scrollPosition - scrollAmount)
       : Math.min(maxScroll, scrollPosition + scrollAmount);
@@ -74,12 +73,17 @@ const SimplePremiumContentRow = ({
     });
   };
 
+  // Don't render if no movies
+  if (movies.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mb-12 px-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         <div className="flex gap-2 items-center">
-          {showSeeMore && (
+          {(showSeeMore || movies.length > visibleCards) && (
             <Button
               variant="outline"
               size="sm"
@@ -90,24 +94,28 @@ const SimplePremiumContentRow = ({
               See More
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => scroll('left')}
-            disabled={!canScrollLeft}
-            className="hover:bg-primary/20 disabled:opacity-50"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => scroll('right')}
-            disabled={!canScrollRight}
-            className="hover:bg-primary/20 disabled:opacity-50"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          {movies.length > visibleCards && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => scroll('left')}
+                disabled={!canScrollLeft}
+                className="hover:bg-primary/20 disabled:opacity-50"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => scroll('right')}
+                disabled={!canScrollRight}
+                className="hover:bg-primary/20 disabled:opacity-50"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
       
