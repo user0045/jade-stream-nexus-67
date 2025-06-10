@@ -1,4 +1,3 @@
-
 import { Calendar, Play, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -122,13 +121,6 @@ const UpcomingCard = ({
                 Watch Trailer
               </Button>
             )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="border-green-600 text-green-400 hover:bg-green-800/50 hover:text-green-300 hover:border-green-500 transition-all duration-300"
-            >
-              Remind Me
-            </Button>
           </div>
         </div>
       </div>

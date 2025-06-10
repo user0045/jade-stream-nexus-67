@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Calendar, Edit, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,6 +60,11 @@ const UpcomingContentManagement = () => {
     loadUpcomingContent();
   };
 
+  const handleAddSuccess = () => {
+    setShowAddForm(false);
+    loadUpcomingContent();
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -85,7 +89,7 @@ const UpcomingContentManagement = () => {
             Back to Management
           </Button>
         </div>
-        <UpcomingUploadForm />
+        <UpcomingUploadForm onSuccess={handleAddSuccess} />
       </div>
     );
   }

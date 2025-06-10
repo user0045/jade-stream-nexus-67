@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar, Upload, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
-const UpcomingUploadForm = () => {
+interface UpcomingUploadFormProps {
+  onSuccess?: () => void;
+}
+
+const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
@@ -26,11 +29,21 @@ const UpcomingUploadForm = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const adjustOrdersForNewContent = (newOrder: number, existingContent: any[]) => {
+    // Move all content with order >= newOrder by +1
+    return existingContent.map(item => ({
+      ...item,
+      sectionOrder: item.sectionOrder >= newOrder ? item.sectionOrder + 1 : item.sectionOrder
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if there are already 20 upcoming content items (simulate check)
     const existingUpcomingContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
+    const newOrder = parseInt(formData.sectionOrder);
+    
+    // Check if there are already 20 upcoming content items
     if (existingUpcomingContent.length >= 20) {
       toast({
         title: "Error",
@@ -40,32 +53,31 @@ const UpcomingUploadForm = () => {
       return;
     }
 
-    // Check if section order is already taken
-    const orderTaken = existingUpcomingContent.some((item: any) => item.sectionOrder === parseInt(formData.sectionOrder));
-    if (orderTaken) {
-      toast({
-        title: "Error", 
-        description: `Section order ${formData.sectionOrder} is already taken. Please choose a different number.`,
-        variant: "destructive"
-      });
-      return;
-    }
-
     console.log("Upcoming content data:", formData);
     
-    // Save to localStorage (simulate database)
+    // Adjust existing orders if the chosen order is taken
+    const orderTaken = existingUpcomingContent.some((item: any) => item.sectionOrder === newOrder);
+    let updatedExistingContent = existingUpcomingContent;
+    
+    if (orderTaken) {
+      updatedExistingContent = adjustOrdersForNewContent(newOrder, existingUpcomingContent);
+    }
+    
+    // Save to localStorage
     const newContent = {
       ...formData,
       id: Date.now(),
-      sectionOrder: parseInt(formData.sectionOrder)
+      sectionOrder: newOrder
     };
     
-    const updatedContent = [...existingUpcomingContent, newContent];
+    const updatedContent = [...updatedExistingContent, newContent];
     localStorage.setItem("upcomingContent", JSON.stringify(updatedContent));
     
     toast({
       title: "Success",
-      description: "Upcoming content added successfully!"
+      description: orderTaken 
+        ? `Upcoming content added successfully! Orders adjusted automatically.`
+        : "Upcoming content added successfully!"
     });
 
     // Reset form
@@ -79,6 +91,11 @@ const UpcomingUploadForm = () => {
       trailerUrl: "",
       sectionOrder: ""
     });
+
+    // Close form if callback provided
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (

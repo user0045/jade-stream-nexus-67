@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import ContentEditForm from "./ContentEditForm";
 
 interface Content {
   id: number;
@@ -34,6 +35,7 @@ const ContentManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [allContent, setAllContent] = useState<Content[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -84,11 +86,20 @@ const ContentManagement = () => {
   const currentContent = filteredContent.slice(startIndex, endIndex);
 
   const handleEdit = (id: number) => {
-    const content = allContent.find(c => c.id === id);
-    toast({
-      title: "Edit Content",
-      description: `Editing "${content?.title}". Edit functionality would open a form here.`
-    });
+    setEditingId(id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleSaveEdit = () => {
+    setEditingId(null);
+    // Reload content from localStorage
+    const storedContent = localStorage.getItem("contentLibrary");
+    if (storedContent) {
+      setAllContent(JSON.parse(storedContent));
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -126,6 +137,27 @@ const ContentManagement = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
+
+  if (editingId) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Edit Content</h2>
+          <Button
+            variant="outline"
+            onClick={handleCancelEdit}
+          >
+            Back to Library
+          </Button>
+        </div>
+        <ContentEditForm
+          contentId={editingId}
+          onCancel={handleCancelEdit}
+          onSave={handleSaveEdit}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
