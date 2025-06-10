@@ -1,7 +1,7 @@
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import SimpleMovieCard from "./SimpleMovieCard";
 
 interface Movie {
@@ -17,19 +17,41 @@ interface SimplePremiumContentRowProps {
   movies: Movie[];
   onMoviePlay?: (id: number) => void;
   onMovieMoreInfo?: (id: number) => void;
+  onSeeMore?: () => void;
 }
 
 const SimplePremiumContentRow = ({ 
   title, 
   movies, 
   onMoviePlay, 
-  onMovieMoreInfo 
+  onMovieMoreInfo,
+  onSeeMore 
 }: SimplePremiumContentRowProps) => {
   const [scrollPosition, setScrollPosition] = useState(0);
-  const maxScroll = Math.max(0, (movies.length * 290) - 1200);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [showSeeMore, setShowSeeMore] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const cardWidth = 290; // Width of each card including gap
+  const visibleCards = 4; // Number of cards visible at once
+  const maxScroll = Math.max(0, (movies.length * cardWidth) - (visibleCards * cardWidth));
+
+  useEffect(() => {
+    const updateScrollState = () => {
+      setCanScrollLeft(scrollPosition > 0);
+      setCanScrollRight(scrollPosition < maxScroll);
+      
+      // Show "See More" button when user reaches near the end
+      const nearEnd = scrollPosition >= maxScroll * 0.7;
+      setShowSeeMore(nearEnd && onSeeMore);
+    };
+
+    updateScrollState();
+  }, [scrollPosition, maxScroll, onSeeMore]);
 
   const scroll = (direction: 'left' | 'right') => {
-    const scrollAmount = 580;
+    const scrollAmount = cardWidth * 2; // Scroll 2 cards at a time
     const newPosition = direction === 'left' 
       ? Math.max(0, scrollPosition - scrollAmount)
       : Math.min(maxScroll, scrollPosition + scrollAmount);
@@ -41,12 +63,23 @@ const SimplePremiumContentRow = ({
     <div className="mb-12 px-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {showSeeMore && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onSeeMore}
+              className="hover:bg-primary/20 mr-2"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              See More
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => scroll('left')}
-            disabled={scrollPosition === 0}
+            disabled={!canScrollLeft}
             className="hover:bg-primary/20 disabled:opacity-50"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -55,7 +88,7 @@ const SimplePremiumContentRow = ({
             variant="ghost"
             size="icon"
             onClick={() => scroll('right')}
-            disabled={scrollPosition >= maxScroll}
+            disabled={!canScrollRight}
             className="hover:bg-primary/20 disabled:opacity-50"
           >
             <ChevronRight className="h-4 w-4" />
@@ -63,7 +96,7 @@ const SimplePremiumContentRow = ({
         </div>
       </div>
       
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden" ref={scrollContainerRef}>
         <div 
           className="flex gap-4 transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${scrollPosition}px)` }}

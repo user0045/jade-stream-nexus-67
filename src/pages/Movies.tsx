@@ -4,78 +4,85 @@ import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 import MovieHero from "@/components/MovieHero";
 
 const Movies = () => {
-  const newReleaseMovies = [
+  // All movie content
+  const allMovies = [
     { id: 13, title: "Indiana Jones 5", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
     { id: 14, title: "Transformers: Rise of the Beasts", genre: "Action • Sci-Fi", rating: "PG-13", year: "2023" },
     { id: 15, title: "The Flash", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
     { id: 16, title: "Elemental", genre: "Animation • Family", rating: "PG", year: "2023" },
     { id: 17, title: "Spider-Man: No Way Home", genre: "Action • Adventure", rating: "PG-13", year: "2021" },
     { id: 18, title: "Top Gun: Maverick", genre: "Action • Drama", rating: "PG-13", year: "2022" },
-    { id: 68, title: "Cocaine Bear", genre: "Comedy • Thriller", rating: "R", year: "2023" },
-    { id: 69, title: "Scream VI", genre: "Horror • Thriller", rating: "R", year: "2023" },
-    { id: 70, title: "Creed III", genre: "Drama • Sport", rating: "PG-13", year: "2023" },
-    { id: 71, title: "John Wick 4", genre: "Action • Thriller", rating: "R", year: "2023" },
-    { id: 72, title: "Avatar: The Way of Water", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2022" },
-  ];
-
-  const popularMovies = [
     { id: 1, title: "Oppenheimer", genre: "Biography • Drama", rating: "R", year: "2023" },
     { id: 2, title: "Barbie", genre: "Comedy • Adventure", rating: "PG-13", year: "2023" },
     { id: 3, title: "Spider-Man: Across the Spider-Verse", genre: "Animation • Action", rating: "PG", year: "2023" },
     { id: 4, title: "Guardians of the Galaxy Vol. 3", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
     { id: 5, title: "Fast X", genre: "Action • Crime", rating: "PG-13", year: "2023" },
     { id: 6, title: "The Little Mermaid", genre: "Family • Musical", rating: "PG", year: "2023" },
-    { id: 73, title: "Everything Everywhere All at Once", genre: "Sci-Fi • Comedy", rating: "R", year: "2022" },
-    { id: 74, title: "The Batman", genre: "Action • Crime", rating: "PG-13", year: "2022" },
-    { id: 75, title: "Dune", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2021" },
-    { id: 76, title: "No Time to Die", genre: "Action • Thriller", rating: "PG-13", year: "2021" },
-    { id: 77, title: "The Power of the Dog", genre: "Drama", rating: "R", year: "2021" },
+    { id: 24, title: "John Wick 4", genre: "Action • Thriller", rating: "R", year: "2023" },
+    { id: 25, title: "Mission Impossible 7", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
+    { id: 26, title: "The Batman", genre: "Action • Crime", rating: "PG-13", year: "2022" },
+    { id: 27, title: "Dune", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2021" },
+    { id: 28, title: "Everything Everywhere All at Once", genre: "Sci-Fi • Comedy", rating: "R", year: "2022" },
+    { id: 29, title: "Knives Out", genre: "Comedy • Mystery", rating: "PG-13", year: "2019" },
+    { id: 30, title: "The Power of the Dog", genre: "Drama", rating: "R", year: "2021" },
+    { id: 31, title: "Scream VI", genre: "Horror • Thriller", rating: "R", year: "2023" },
+    { id: 32, title: "Gone Girl", genre: "Mystery • Thriller", rating: "R", year: "2014" },
+    { id: 33, title: "Zodiac", genre: "Crime • Mystery", rating: "R", year: "2007" },
+    { id: 34, title: "Heat", genre: "Crime • Drama", rating: "R", year: "1995" },
+    { id: 35, title: "The Departed", genre: "Crime • Thriller", rating: "R", year: "2006" },
+    { id: 36, title: "Casino", genre: "Crime • Drama", rating: "R", year: "1995" },
+    { id: 37, title: "Goodfellas", genre: "Crime • Drama", rating: "R", year: "1990" },
+    { id: 38, title: "The Conjuring", genre: "Horror • Thriller", rating: "R", year: "2013" },
+    { id: 39, title: "Hereditary", genre: "Horror • Drama", rating: "R", year: "2018" },
+    { id: 40, title: "A Quiet Place", genre: "Horror • Thriller", rating: "PG-13", year: "2018" },
+    { id: 41, title: "Interstellar", genre: "Sci-Fi • Drama", rating: "PG-13", year: "2014" },
+    { id: 42, title: "Blade Runner 2049", genre: "Sci-Fi • Thriller", rating: "R", year: "2017" },
+    { id: 43, title: "The Martian", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2015" },
+    { id: 44, title: "Arrival", genre: "Sci-Fi • Drama", rating: "PG-13", year: "2016" },
+    { id: 45, title: "Ex Machina", genre: "Sci-Fi • Thriller", rating: "R", year: "2014" },
   ];
 
-  const actionMovies = [
-    { id: 1, title: "John Wick 4", genre: "Action • Thriller", rating: "R", year: "2023" },
-    { id: 2, title: "Top Gun: Maverick", genre: "Action • Drama", rating: "PG-13", year: "2022" },
-    { id: 3, title: "Mission Impossible 7", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
-    { id: 4, title: "The Batman", genre: "Action • Crime", rating: "PG-13", year: "2022" },
-    { id: 5, title: "Dune", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2021" },
-    { id: 6, title: "No Time to Die", genre: "Action • Thriller", rating: "PG-13", year: "2021" },
-    { id: 78, title: "Fast X", genre: "Action • Crime", rating: "PG-13", year: "2023" },
-    { id: 79, title: "Guardians of the Galaxy Vol. 3", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
-    { id: 80, title: "Spider-Man: No Way Home", genre: "Action • Adventure", rating: "PG-13", year: "2021" },
-    { id: 81, title: "The Flash", genre: "Action • Adventure", rating: "PG-13", year: "2023" },
-    { id: 82, title: "Transformers: Rise of the Beasts", genre: "Action • Sci-Fi", rating: "PG-13", year: "2023" },
-  ];
+  // Get latest 11 items for each category
+  const getLatest11 = (filterFn: (item: any) => boolean) => {
+    return allMovies
+      .filter(filterFn)
+      .sort((a, b) => parseInt(b.year) - parseInt(a.year))
+      .slice(0, 11);
+  };
 
-  const dramaMovies = [
-    { id: 7, title: "The Power of the Dog", genre: "Drama • Romance", rating: "R", year: "2021" },
-    { id: 8, title: "Nomadland", genre: "Drama", rating: "R", year: "2020" },
-    { id: 9, title: "Minari", genre: "Drama • Family", rating: "PG-13", year: "2020" },
-    { id: 10, title: "Sound of Metal", genre: "Drama • Music", rating: "R", year: "2020" },
-    { id: 11, title: "The Father", genre: "Drama • Mystery", rating: "PG-13", year: "2020" },
-    { id: 12, title: "Promising Young Woman", genre: "Drama • Thriller", rating: "R", year: "2020" },
-    { id: 83, title: "Oppenheimer", genre: "Biography • Drama", rating: "R", year: "2023" },
-    { id: 84, title: "The Fabelmans", genre: "Drama • Comedy", rating: "PG-13", year: "2022" },
-    { id: 85, title: "Women Talking", genre: "Drama", rating: "PG-13", year: "2022" },
-    { id: 86, title: "The Banshees of Inisherin", genre: "Drama • Comedy", rating: "R", year: "2022" },
-    { id: 87, title: "Tar", genre: "Drama • Music", rating: "R", year: "2022" },
-  ];
-
-  const sciFiMovies = [
-    { id: 13, title: "Everything Everywhere All at Once", genre: "Sci-Fi • Comedy", rating: "R", year: "2022" },
-    { id: 14, title: "Blade Runner 2049", genre: "Sci-Fi • Thriller", rating: "R", year: "2017" },
-    { id: 15, title: "Arrival", genre: "Sci-Fi • Drama", rating: "PG-13", year: "2016" },
-    { id: 16, title: "Interstellar", genre: "Sci-Fi • Drama", rating: "PG-13", year: "2014" },
-    { id: 17, title: "Ex Machina", genre: "Sci-Fi • Thriller", rating: "R", year: "2014" },
-    { id: 18, title: "The Martian", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2015" },
-    { id: 88, title: "Dune", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2021" },
-    { id: 89, title: "Avatar: The Way of Water", genre: "Sci-Fi • Adventure", rating: "PG-13", year: "2022" },
-    { id: 90, title: "Nope", genre: "Sci-Fi • Horror", rating: "R", year: "2022" },
-    { id: 91, title: "The Adam Project", genre: "Sci-Fi • Comedy", rating: "PG-13", year: "2022" },
-    { id: 92, title: "Turning Red", genre: "Animation • Fantasy", rating: "PG", year: "2022" },
-  ];
+  const newReleases = getLatest11(() => true);
+  const popular = getLatest11(() => true);
+  const actionAdventure = getLatest11(item => 
+    item.genre.toLowerCase().includes('action') || 
+    item.genre.toLowerCase().includes('adventure')
+  );
+  const comedy = getLatest11(item => 
+    item.genre.toLowerCase().includes('comedy')
+  );
+  const crime = getLatest11(item => 
+    item.genre.toLowerCase().includes('crime')
+  );
+  const drama = getLatest11(item => 
+    item.genre.toLowerCase().includes('drama')
+  );
+  const horror = getLatest11(item => 
+    item.genre.toLowerCase().includes('horror')
+  );
+  const mysteryThriller = getLatest11(item => 
+    item.genre.toLowerCase().includes('mystery') || 
+    item.genre.toLowerCase().includes('thriller')
+  );
+  const sciFi = getLatest11(item => 
+    item.genre.toLowerCase().includes('sci-fi')
+  );
 
   const handleMovieAction = (movieId: number, action: string) => {
     console.log(`${action} movie with ID: ${movieId}`);
+  };
+
+  const handleSeeMore = (sectionTitle: string) => {
+    console.log(`See more for section: ${sectionTitle}`);
+    // TODO: Navigate to grid view page for this section
   };
 
   return (
@@ -96,37 +103,74 @@ const Movies = () => {
         <div className="container mx-auto pb-12">
           <SimplePremiumContentRow 
             title="New Releases" 
-            movies={newReleaseMovies}
+            movies={newReleases}
             onMoviePlay={(id) => handleMovieAction(id, "Play")}
             onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("New Releases")}
           />
           
           <SimplePremiumContentRow 
             title="Popular" 
-            movies={popularMovies}
+            movies={popular}
             onMoviePlay={(id) => handleMovieAction(id, "Play")}
             onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Popular")}
           />
           
           <SimplePremiumContentRow 
             title="Action & Adventure" 
-            movies={actionMovies}
+            movies={actionAdventure}
             onMoviePlay={(id) => handleMovieAction(id, "Play")}
             onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Action & Adventure")}
           />
           
           <SimplePremiumContentRow 
-            title="Award-Winning Dramas" 
-            movies={dramaMovies}
+            title="Comedy" 
+            movies={comedy}
             onMoviePlay={(id) => handleMovieAction(id, "Play")}
             onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Comedy")}
           />
           
           <SimplePremiumContentRow 
-            title="Sci-Fi Masterpieces" 
-            movies={sciFiMovies}
+            title="Crime" 
+            movies={crime}
             onMoviePlay={(id) => handleMovieAction(id, "Play")}
             onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Crime")}
+          />
+          
+          <SimplePremiumContentRow 
+            title="Drama" 
+            movies={drama}
+            onMoviePlay={(id) => handleMovieAction(id, "Play")}
+            onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Drama")}
+          />
+          
+          <SimplePremiumContentRow 
+            title="Horror" 
+            movies={horror}
+            onMoviePlay={(id) => handleMovieAction(id, "Play")}
+            onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Horror")}
+          />
+          
+          <SimplePremiumContentRow 
+            title="Mystery & Thriller" 
+            movies={mysteryThriller}
+            onMoviePlay={(id) => handleMovieAction(id, "Play")}
+            onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Mystery & Thriller")}
+          />
+          
+          <SimplePremiumContentRow 
+            title="Sci-Fi" 
+            movies={sciFi}
+            onMoviePlay={(id) => handleMovieAction(id, "Play")}
+            onMovieMoreInfo={(id) => handleMovieAction(id, "More info")}
+            onSeeMore={() => handleSeeMore("Sci-Fi")}
           />
         </div>
       </div>
