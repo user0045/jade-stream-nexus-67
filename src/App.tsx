@@ -7,7 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Movies from "./pages/Movies";
 import TVShows from "./pages/TVShows";
-import Trending from "./pages/Trending";
+import Upcoming from "./pages/Upcoming";
+import SeeMore from "./pages/SeeMore";
 import VideoPlayer from "./pages/VideoPlayer";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
@@ -24,7 +25,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/tv-shows" element={<TVShows />} />
-          <Route path="/trending" element={<Trending />} />
+          <Route path="/upcoming" element={<Upcoming />} />
+          <Route path="/see-more" element={<SeeMore />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/player" element={<VideoPlayer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

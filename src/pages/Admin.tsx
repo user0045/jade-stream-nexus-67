@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { 
   BarChart3, 
   PlayCircle,
+  Calendar,
   LogOut
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import ContentManagement from "@/components/ContentManagement";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import ContentUploadForm from "@/components/ContentUploadForm";
+import UpcomingUploadForm from "@/components/UpcomingUploadForm";
 import AdminAuth from "@/components/AdminAuth";
 
 const Admin = () => {
@@ -38,6 +40,8 @@ const Admin = () => {
     switch (activeTab) {
       case "upload":
         return <ContentUploadForm />;
+      case "upcoming":
+        return <UpcomingUploadForm />;
       case "manage":
         return <ContentManagement />;
       case "analytics":
@@ -79,6 +83,17 @@ const Admin = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
             Upload Content
+          </button>
+          <button
+            onClick={() => setActiveTab("upcoming")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${
+              activeTab === "upcoming" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-card/50 text-foreground hover:bg-accent"
+            }`}
+          >
+            <Calendar className="h-4 w-4" />
+            Upcoming Content
           </button>
           <button
             onClick={() => setActiveTab("manage")}

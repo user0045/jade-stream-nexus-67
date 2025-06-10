@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import SimpleMovieCard from "./SimpleMovieCard";
 
 interface Movie {
@@ -26,6 +27,7 @@ const SimplePremiumContentRow = ({
   onMovieMoreInfo,
   onSeeMore 
 }: SimplePremiumContentRowProps) => {
+  const navigate = useNavigate();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -58,6 +60,15 @@ const SimplePremiumContentRow = ({
     setScrollPosition(newPosition);
   };
 
+  const handleSeeMore = () => {
+    navigate('/see-more', {
+      state: {
+        title,
+        movies
+      }
+    });
+  };
+
   return (
     <div className="mb-12 px-6">
       <div className="flex items-center justify-between mb-6">
@@ -67,7 +78,7 @@ const SimplePremiumContentRow = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={onSeeMore}
+              onClick={handleSeeMore}
               className="hover:bg-primary/20 mr-2"
             >
               <Plus className="h-4 w-4 mr-2" />
