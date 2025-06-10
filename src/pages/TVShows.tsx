@@ -1,7 +1,7 @@
-
 import PremiumNavbar from "@/components/PremiumNavbar";
 import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 import MovieHero from "@/components/MovieHero";
+import SimpleMovieCard from "@/components/SimpleMovieCard";
 
 const TVShows = () => {
   // All TV show content
@@ -45,6 +45,11 @@ const TVShows = () => {
       .sort((a, b) => parseInt(b.year) - parseInt(a.year))
       .slice(0, 11);
   };
+
+  // Get latest 5 for hero section
+  const heroShows = allTVShows
+    .sort((a, b) => parseInt(b.year) - parseInt(a.year))
+    .slice(0, 5);
 
   const newReleases = getLatest11(() => true);
   const popular = getLatest11(() => true);
@@ -95,6 +100,23 @@ const TVShows = () => {
           duration="Season 1"
           background="from-red-900/40 via-orange-800/20 to-background"
         />
+        
+        {/* Hero Section with 5 Cards */}
+        <div className="container mx-auto px-6 -mt-8 relative z-20">
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-8">
+            {heroShows.map((show) => (
+              <SimpleMovieCard
+                key={show.id}
+                title={show.title}
+                genre={show.genre}
+                rating={show.rating}
+                year={show.year}
+                onPlay={() => handleShowAction(show.id, "Play")}
+                onMoreInfo={() => handleShowAction(show.id, "More info")}
+              />
+            ))}
+          </div>
+        </div>
         
         <div className="container mx-auto pb-12">
           <SimplePremiumContentRow 
