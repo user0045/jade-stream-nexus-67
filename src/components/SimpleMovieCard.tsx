@@ -30,18 +30,14 @@ const SimpleMovieCard = ({
   const [showInfoCard, setShowInfoCard] = useState(false);
 
   const handlePlay = () => {
-    if (onPlay) {
-      onPlay();
-    } else {
-      navigate('/player', { 
-        state: { 
-          videoUrl, 
-          title, 
-          description: `Experience the thrilling journey of ${title}. This ${genre.toLowerCase()} masterpiece delivers exceptional storytelling.`,
-          duration: "2h 30m"
-        } 
-      });
-    }
+    navigate('/player', { 
+      state: { 
+        videoUrl, 
+        title, 
+        description: `Experience the thrilling journey of ${title}. This ${genre.toLowerCase()} masterpiece delivers exceptional storytelling.`,
+        duration: "2h 30m"
+      } 
+    });
   };
 
   const handleMoreInfo = (e: React.MouseEvent) => {

@@ -54,10 +54,10 @@ const InfoCard = ({ isOpen, onClose, content }: InfoCardProps) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-4"
       onClick={handleBackdropClick}
     >
-      <div className="relative w-full max-w-2xl max-h-[90vh] bg-background/98 backdrop-blur-md rounded-xl border border-primary/20 overflow-hidden animate-scale-in shadow-2xl">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-background/98 backdrop-blur-md rounded-xl border border-primary/20 overflow-hidden animate-scale-in shadow-2xl">
         {/* Close button */}
         <Button
           variant="ghost"
