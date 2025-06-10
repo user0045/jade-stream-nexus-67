@@ -1,4 +1,3 @@
-
 import { Play, Info, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +15,9 @@ interface UpcomingCardProps {
   year?: string;
   image?: string;
   status?: string;
+  type?: "movie" | "tv";
+  thumbnailUrl?: string;
+  trailerUrl?: string;
 }
 
 const UpcomingCard = ({ 
@@ -27,7 +29,10 @@ const UpcomingCard = ({
   releaseDate,
   year,
   image,
-  status = "Coming Soon"
+  status = "Coming Soon",
+  type,
+  thumbnailUrl,
+  trailerUrl
 }: UpcomingCardProps) => {
   const navigate = useNavigate();
   const [showInfoCard, setShowInfoCard] = useState(false);
@@ -37,7 +42,8 @@ const UpcomingCard = ({
       state: { 
         title, 
         description: description || `Get ready for ${title}. This upcoming ${genre.toLowerCase()} promises to deliver exceptional entertainment.`,
-        duration: "2h 30m"
+        duration: "2h 30m",
+        videoUrl: trailerUrl
       } 
     });
   };
@@ -51,8 +57,8 @@ const UpcomingCard = ({
       <div className="group relative bg-card rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl">
         {/* Image placeholder */}
         <div className="aspect-[2/3] bg-gradient-to-br from-primary/20 via-accent to-secondary relative overflow-hidden">
-          {image ? (
-            <img src={image} alt={title} className="w-full h-full object-cover" />
+          {image || thumbnailUrl ? (
+            <img src={image || thumbnailUrl} alt={title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent/30 to-secondary/40" />
           )}
@@ -117,7 +123,8 @@ const UpcomingCard = ({
           rating,
           year: year || new Date(releaseDate).getFullYear().toString(),
           description: description || `Get ready for ${title}. This upcoming ${genre.toLowerCase()} promises to deliver exceptional entertainment and unforgettable moments.`,
-          duration: "2h 30m"
+          duration: "2h 30m",
+          videoUrl: trailerUrl
         }}
       />
     </>
