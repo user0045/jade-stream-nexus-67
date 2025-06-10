@@ -120,7 +120,7 @@ const Upcoming = () => {
       
       <div className="pt-24 pb-12">
         <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-thin uppercase tracking-wider text-foreground mb-12 font-mono">Coming Soon</h1>
+          <h1 className="text-2xl font-thin uppercase tracking-[0.3em] text-foreground mb-12 font-mono">Coming Soon</h1>
           
           <div className="space-y-6">
             {displayContent.map((content) => (

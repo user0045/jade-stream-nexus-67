@@ -1,4 +1,3 @@
-
 import { Play, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +9,7 @@ interface SimpleMovieCardProps {
   genre: string;
   rating: string;
   year: string;
+  videoUrl?: string;
   onPlay?: () => void;
   onMoreInfo?: () => void;
 }
@@ -19,6 +19,7 @@ const SimpleMovieCard = ({
   genre, 
   rating, 
   year, 
+  videoUrl,
   onPlay, 
   onMoreInfo 
 }: SimpleMovieCardProps) => {
@@ -29,7 +30,14 @@ const SimpleMovieCard = ({
     if (onPlay) {
       onPlay();
     } else {
-      navigate('/player');
+      navigate('/player', { 
+        state: { 
+          videoUrl, 
+          title, 
+          description: `Experience the thrilling journey of ${title}. This ${genre.toLowerCase()} masterpiece delivers exceptional storytelling.`,
+          duration: "2h 30m"
+        } 
+      });
     }
   };
 
@@ -98,7 +106,8 @@ const SimpleMovieCard = ({
           title,
           genre,
           rating,
-          year
+          year,
+          videoUrl
         }}
       />
     </>

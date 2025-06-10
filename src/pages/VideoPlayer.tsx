@@ -1,18 +1,21 @@
-
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import PremiumNavbar from '@/components/PremiumNavbar';
 import PremiumVideoPlayer from '@/components/PremiumVideoPlayer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 const VideoPlayer = () => {
+  const location = useLocation();
   const [isWatching, setIsWatching] = useState(false);
 
+  const videoData = location.state || {};
+  
   const sampleVideo = {
-    src: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-    title: "Dune: Part Two",
-    description: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-    duration: "2h 46m"
+    src: videoData.videoUrl || "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+    title: videoData.title || "Dune: Part Two",
+    description: videoData.description || "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+    duration: videoData.duration || "2h 46m"
   };
 
   if (isWatching) {
