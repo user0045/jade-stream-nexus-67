@@ -20,6 +20,7 @@ interface Season {
   description: string;
   year: string;
   imdbRating: string;
+  genres: string[];
   tags: string[];
   cast: string[];
   directors: string[];
@@ -97,6 +98,7 @@ const ContentUploadForm = () => {
       description: "",
       year: "",
       imdbRating: "",
+      genres: [""],
       tags: [""],
       cast: [""],
       directors: [""],
@@ -249,20 +251,28 @@ const ContentUploadForm = () => {
   };
 
   const getAvailableSections = () => {
-    const commonSections = ["home-hero", "trending-now"];
-    
     if (contentType === "movie") {
-      return [...commonSections, "popular-movies", "action-adventure", "award-winning-dramas", "sci-fi-masterpieces"];
+      return ["home-page-hero", "movie-page-hero", "new-release", "popular"];
     } else {
-      return [...commonSections, "popular-tv-shows", "trending-shows", "crime-thriller", "comedy-series"];
+      return ["home-page-hero", "tv-shows-page-hero", "new-release", "popular"];
     }
   };
 
   const availableGenres = [
     "Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", "Thriller", 
     "Documentary", "Fantasy", "Crime", "Biography", "Animation", "Adventure",
-    "Mystery", "War", "Western", "Musical", "Family"
+    "Mystery", "War", "Musical", "Family"
   ];
+
+  const getAvailableGenres = (currentGenres: string[], currentValue: string = "") => {
+    const usedGenres = currentGenres.filter(g => g && g !== currentValue);
+    return availableGenres.filter(genre => !usedGenres.includes(genre));
+  };
+
+  const getSeasonAvailableGenres = (seasonIndex: number, currentGenres: string[], currentValue: string = "") => {
+    const usedGenres = currentGenres.filter(g => g && g !== currentValue);
+    return availableGenres.filter(genre => !usedGenres.includes(genre));
+  };
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
@@ -365,7 +375,7 @@ const ContentUploadForm = () => {
                         required={index === 0}
                       >
                         <option value="">Select Genre</option>
-                        {availableGenres.map(genreOption => (
+                        {getAvailableGenres(formData.genres, genre).map(genreOption => (
                           <option key={genreOption} value={genreOption}>{genreOption}</option>
                         ))}
                       </select>
@@ -388,6 +398,7 @@ const ContentUploadForm = () => {
                     size="sm"
                     onClick={() => addArrayItem("genres")}
                     className="mt-2"
+                    disabled={formData.genres.length >= availableGenres.length}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Genre
@@ -647,12 +658,10 @@ const ContentUploadForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {getAvailableSections().map((section) => {
                     const sectionLabels: Record<string, string> = {
-                      "home-hero": "Home Page Hero",
-                      "trending-now": "Trending Now",
-                      "popular-movies": "Popular Movies",
-                      "action-adventure": "Action & Adventure",
-                      "award-winning-dramas": "Award-Winning Dramas",
-                      "sci-fi-masterpieces": "Sci-Fi Masterpieces"
+                      "home-page-hero": "Home Page Hero",
+                      "movie-page-hero": "Movie Page Hero",
+                      "new-release": "New Release",
+                      "popular": "Popular"
                     };
 
                     return (
@@ -746,6 +755,48 @@ const ContentUploadForm = () => {
                           placeholder="Season description"
                           rows={2}
                         />
+                      </div>
+
+                      {/* Season Genres */}
+                      <div>
+                        <Label className="text-sm font-medium text-foreground mb-2 block">Genres *</Label>
+                        {season.genres.map((genre, index) => (
+                          <div key={index} className="flex gap-2 mb-2">
+                            <select 
+                              value={genre}
+                              onChange={(e) => handleSeasonArrayChange(seasonIndex, "genres", index, e.target.value)}
+                              className="flex-1 px-3 py-2 bg-background border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                              required={index === 0}
+                            >
+                              <option value="">Select Genre</option>
+                              {getSeasonAvailableGenres(seasonIndex, season.genres, genre).map(genreOption => (
+                                <option key={genreOption} value={genreOption}>{genreOption}</option>
+                              ))}
+                            </select>
+                            {season.genres.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeSeasonArrayItem(seasonIndex, "genres", index)}
+                                className="px-2 h-8"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addSeasonArrayItem(seasonIndex, "genres")}
+                          className="mt-2 h-8 text-xs"
+                          disabled={season.genres.length >= availableGenres.length}
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add Genre
+                        </Button>
                       </div>
 
                       {/* Season Tags */}
@@ -923,12 +974,10 @@ const ContentUploadForm = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                           {getAvailableSections().map((section) => {
                             const sectionLabels: Record<string, string> = {
-                              "home-hero": "Home Page Hero",
-                              "trending-now": "Trending Now",
-                              "popular-tv-shows": "Popular TV Shows",
-                              "trending-shows": "Trending Shows",
-                              "crime-thriller": "Crime & Thriller",
-                              "comedy-series": "Comedy Series"
+                              "home-page-hero": "Home Page Hero",
+                              "tv-shows-page-hero": "TV Shows Page Hero",
+                              "new-release": "New Release",
+                              "popular": "Popular"
                             };
 
                             return (
