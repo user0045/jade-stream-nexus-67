@@ -1,3 +1,4 @@
+
 import PremiumNavbar from "@/components/PremiumNavbar";
 import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
 import MovieHero from "@/components/MovieHero";
@@ -101,20 +102,22 @@ const TVShows = () => {
           background="from-red-900/40 via-orange-800/20 to-background"
         />
         
-        {/* Hero Section with 5 Cards */}
-        <div className="container mx-auto px-6 -mt-8 relative z-20">
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-8">
-            {heroShows.map((show) => (
-              <SimpleMovieCard
-                key={show.id}
-                title={show.title}
-                genre={show.genre}
-                rating={show.rating}
-                year={show.year}
-                onPlay={() => handleShowAction(show.id, "Play")}
-                onMoreInfo={() => handleShowAction(show.id, "More info")}
-              />
-            ))}
+        {/* Hero Section with 5 Cards - positioned over the hero background */}
+        <div className="relative -mt-32 z-20">
+          <div className="container mx-auto px-6">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-8">
+              {heroShows.map((show) => (
+                <SimpleMovieCard
+                  key={show.id}
+                  title={show.title}
+                  genre={show.genre}
+                  rating={show.rating}
+                  year={show.year}
+                  onPlay={() => handleShowAction(show.id, "Play")}
+                  onMoreInfo={() => handleShowAction(show.id, "More info")}
+                />
+              ))}
+            </div>
           </div>
         </div>
         
