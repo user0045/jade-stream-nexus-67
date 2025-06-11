@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,14 @@ const ContentEditForm = ({ contentId, onCancel, onSave }: ContentEditFormProps) 
         return;
       }
 
-      setFormData(data);
+      // Cast the type field to ensure it matches our Content interface
+      const typedData = {
+        ...data,
+        type: data.type as "Movie" | "TV Show", 
+        status: data.status as "Published" | "Draft"
+      };
+
+      setFormData(typedData);
       setIsLoading(false);
     };
 

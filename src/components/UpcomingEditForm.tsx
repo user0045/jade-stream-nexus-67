@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,13 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
         return;
       }
 
-      setFormData(data);
+      // Cast the type field to ensure it matches our UpcomingContent interface
+      const typedData = {
+        ...data,
+        type: data.type as "movie" | "tv"
+      };
+
+      setFormData(typedData);
       setIsLoading(false);
     };
 
@@ -128,7 +133,7 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
               <Label htmlFor="type">Type</Label>
               <Select
                 value={formData.type}
-                onValueChange={(value) => handleInputChange("type", value)}
+                onValueChange={(value: "movie" | "tv") => handleInputChange("type", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
