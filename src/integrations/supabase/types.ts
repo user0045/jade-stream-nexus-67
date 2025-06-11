@@ -14,7 +14,8 @@ export type Database = {
           created_at: string
           description: string | null
           duration: string
-          genre: string
+          episodes: number | null
+          genres: string[]
           id: string
           rating: string
           release_year: number | null
@@ -31,7 +32,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration: string
-          genre: string
+          episodes?: number | null
+          genres?: string[]
           id?: string
           rating: string
           release_year?: number | null
@@ -48,7 +50,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration?: string
-          genre?: string
+          episodes?: number | null
+          genres?: string[]
           id?: string
           rating?: string
           release_year?: number | null
@@ -94,7 +97,8 @@ export type Database = {
         Row: {
           created_at: string
           description: string
-          genre: string
+          episodes: number | null
+          genres: string[]
           id: string
           release_date: string
           section_order: number
@@ -107,7 +111,8 @@ export type Database = {
         Insert: {
           created_at?: string
           description: string
-          genre: string
+          episodes?: number | null
+          genres?: string[]
           id?: string
           release_date: string
           section_order: number
@@ -120,7 +125,8 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string
-          genre?: string
+          episodes?: number | null
+          genres?: string[]
           id?: string
           release_date?: string
           section_order?: number

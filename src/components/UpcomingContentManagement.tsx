@@ -14,7 +14,8 @@ import UpcomingEditForm from "./UpcomingEditForm";
 interface UpcomingContent {
   id: string;
   title: string;
-  genre: string;
+  genres: string[];
+  episodes: number | null;
   release_date: string;
   description: string;
   type: "movie" | "tv";
@@ -175,7 +176,8 @@ const UpcomingContentManagement = () => {
                 <TableHead>Order</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Genre</TableHead>
+                <TableHead>Genres</TableHead>
+                <TableHead>Episodes</TableHead>
                 <TableHead>Release Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -194,7 +196,27 @@ const UpcomingContentManagement = () => {
                       {content.type === "movie" ? "Movie" : "TV Show"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{content.genre}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {content.genres.slice(0, 2).map((genre) => (
+                        <Badge key={genre} variant="outline" className="text-xs">
+                          {genre}
+                        </Badge>
+                      ))}
+                      {content.genres.length > 2 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{content.genres.length - 2}
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {content.type === "tv" && content.episodes ? (
+                      <Badge variant="secondary">{content.episodes} eps</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
                   <TableCell>{formatDate(content.release_date)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">

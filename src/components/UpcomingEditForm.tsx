@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,13 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UpcomingContent {
   id: string;
   title: string;
-  genre: string;
+  genres: string[];
+  episodes: number | null;
   release_date: string;
   description: string;
   type: "movie" | "tv";
@@ -30,6 +34,7 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
   const { toast } = useToast();
   const [formData, setFormData] = useState<UpcomingContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [newGenre, setNewGenre] = useState("");
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -51,7 +56,8 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
       // Cast the type field to ensure it matches our UpcomingContent interface
       const typedData = {
         ...data,
-        type: data.type as "movie" | "tv"
+        type: data.type as "movie" | "tv",
+        genres: data.genres || []
       };
 
       setFormData(typedData);
@@ -65,12 +71,22 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
     e.preventDefault();
     if (!formData) return;
 
+    if (formData.genres.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please add at least one genre",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const { error } = await supabase
       .from('upcoming_content')
       .update({
         title: formData.title,
         type: formData.type,
-        genre: formData.genre,
+        genres: formData.genres,
+        episodes: formData.type === "tv" ? formData.episodes : null,
         release_date: formData.release_date,
         description: formData.description,
         thumbnail_url: formData.thumbnail_url,
@@ -97,9 +113,28 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
     onSave();
   };
 
-  const handleInputChange = (field: keyof UpcomingContent, value: string | number) => {
+  const handleInputChange = (field: keyof UpcomingContent, value: string | number | string[]) => {
     if (formData) {
       setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  const addGenre = () => {
+    if (newGenre.trim() && formData && !formData.genres.includes(newGenre.trim())) {
+      setFormData({
+        ...formData,
+        genres: [...formData.genres, newGenre.trim()]
+      });
+      setNewGenre("");
+    }
+  };
+
+  const removeGenre = (genreToRemove: string) => {
+    if (formData) {
+      setFormData({
+        ...formData,
+        genres: formData.genres.filter(genre => genre !== genreToRemove)
+      });
     }
   };
 
@@ -144,16 +179,47 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="genre">Genre</Label>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Genres</Label>
+            <div className="flex gap-2 mb-2">
               <Input
-                id="genre"
-                value={formData.genre}
-                onChange={(e) => handleInputChange("genre", e.target.value)}
-                required
+                value={newGenre}
+                onChange={(e) => setNewGenre(e.target.value)}
+                placeholder="Add a genre (e.g., Action, Sci-Fi)"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addGenre())}
               />
+              <Button type="button" onClick={addGenre} variant="outline" size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.genres.map((genre) => (
+                <Badge key={genre} variant="secondary" className="flex items-center gap-1">
+                  {genre}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() => removeGenre(genre)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {formData.type === "tv" && (
+              <div className="space-y-2">
+                <Label htmlFor="episodes">Number of Episodes</Label>
+                <Input
+                  id="episodes"
+                  type="number"
+                  min="1"
+                  value={formData.episodes || ""}
+                  onChange={(e) => handleInputChange("episodes", e.target.value ? parseInt(e.target.value) : null)}
+                />
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="release_date">Release Date</Label>
@@ -165,7 +231,7 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="section_order">Section Order</Label>
               <Input

@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-import { Calendar, Save } from "lucide-react";
+import { Calendar, Save, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,21 +20,49 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
   const [formData, setFormData] = useState({
     title: "",
     type: "",
-    genre: "",
+    genres: [] as string[],
+    episodes: "",
     release_date: "",
     description: "",
     thumbnail_url: "",
     trailer_url: "",
     section_order: ""
   });
+  const [newGenre, setNewGenre] = useState("");
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const addGenre = () => {
+    if (newGenre.trim() && !formData.genres.includes(newGenre.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        genres: [...prev.genres, newGenre.trim()]
+      }));
+      setNewGenre("");
+    }
+  };
+
+  const removeGenre = (genreToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      genres: prev.genres.filter(genre => genre !== genreToRemove)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (formData.genres.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please add at least one genre",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Check if there are already 20 upcoming content items
     const { count, error: countError } = await supabase
       .from('upcoming_content')
@@ -92,7 +121,8 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
       .insert({
         title: formData.title,
         type: formData.type as "movie" | "tv",
-        genre: formData.genre,
+        genres: formData.genres,
+        episodes: formData.type === "tv" && formData.episodes ? parseInt(formData.episodes) : null,
         release_date: formData.release_date,
         description: formData.description,
         thumbnail_url: formData.thumbnail_url || null,
@@ -120,7 +150,8 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
     setFormData({
       title: "",
       type: "",
-      genre: "",
+      genres: [],
+      episodes: "",
       release_date: "",
       description: "",
       thumbnail_url: "",
@@ -174,18 +205,48 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="genre" className="text-foreground">Genre</Label>
+          <div className="space-y-2">
+            <Label className="text-foreground">Genres</Label>
+            <div className="flex gap-2 mb-2">
               <Input
-                id="genre"
-                value={formData.genre}
-                onChange={(e) => handleInputChange("genre", e.target.value)}
-                placeholder="e.g., Action • Adventure"
+                value={newGenre}
+                onChange={(e) => setNewGenre(e.target.value)}
+                placeholder="Add a genre (e.g., Action, Sci-Fi)"
                 className="bg-input border-border text-foreground"
-                required
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addGenre())}
               />
+              <Button type="button" onClick={addGenre} variant="outline" size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.genres.map((genre) => (
+                <Badge key={genre} variant="secondary" className="flex items-center gap-1">
+                  {genre}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() => removeGenre(genre)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {formData.type === "tv" && (
+              <div className="space-y-2">
+                <Label htmlFor="episodes" className="text-foreground">Number of Episodes</Label>
+                <Input
+                  id="episodes"
+                  type="number"
+                  min="1"
+                  value={formData.episodes}
+                  onChange={(e) => handleInputChange("episodes", e.target.value)}
+                  placeholder="Enter number of episodes"
+                  className="bg-input border-border text-foreground"
+                />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="section_order" className="text-foreground">Section Order (1-20)</Label>
