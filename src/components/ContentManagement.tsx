@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { 
   Edit3, 
@@ -16,10 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ContentEditForm from "./ContentEditForm";
+import ContentUploadForm from "./ContentUploadForm";
 
 interface Content {
-  id: number;
+  id: string;
   title: string;
   type: "Movie" | "TV Show";
   genre: string;
@@ -27,51 +31,32 @@ interface Content {
   rating: string;
   status: "Published" | "Draft";
   views: string;
-  uploadDate: string;
+  created_at: string;
+  description?: string;
+  release_year?: number;
 }
 
 const ContentManagement = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [allContent, setAllContent] = useState<Content[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    // Load content from localStorage or use default data
-    const storedContent = localStorage.getItem("contentLibrary");
-    if (storedContent) {
-      setAllContent(JSON.parse(storedContent));
-    } else {
-      // Generate 21 items of sample content
-      const defaultContent: Content[] = [
-        { id: 1, title: "The Dark Knight", type: "Movie", genre: "Action", duration: "152 min", rating: "9.0", status: "Published", views: "2.3M", uploadDate: "2024-01-15" },
-        { id: 2, title: "Stranger Things", type: "TV Show", genre: "Sci-Fi", duration: "8 episodes", rating: "8.7", status: "Published", views: "4.1M", uploadDate: "2024-01-10" },
-        { id: 3, title: "Avatar", type: "Movie", genre: "Adventure", duration: "162 min", rating: "7.8", status: "Draft", views: "0", uploadDate: "2024-01-20" },
-        { id: 4, title: "Breaking Bad", type: "TV Show", genre: "Drama", duration: "62 episodes", rating: "9.5", status: "Published", views: "5.7M", uploadDate: "2024-01-05" },
-        { id: 5, title: "Inception", type: "Movie", genre: "Sci-Fi", duration: "148 min", rating: "8.8", status: "Published", views: "3.2M", uploadDate: "2024-02-01" },
-        { id: 6, title: "The Office", type: "TV Show", genre: "Comedy", duration: "201 episodes", rating: "9.0", status: "Published", views: "6.1M", uploadDate: "2024-02-05" },
-        { id: 7, title: "Interstellar", type: "Movie", genre: "Sci-Fi", duration: "169 min", rating: "8.6", status: "Published", views: "2.8M", uploadDate: "2024-02-10" },
-        { id: 8, title: "Game of Thrones", type: "TV Show", genre: "Fantasy", duration: "73 episodes", rating: "9.3", status: "Published", views: "7.2M", uploadDate: "2024-02-15" },
-        { id: 9, title: "Pulp Fiction", type: "Movie", genre: "Crime", duration: "154 min", rating: "8.9", status: "Published", views: "1.9M", uploadDate: "2024-02-20" },
-        { id: 10, title: "Friends", type: "TV Show", genre: "Comedy", duration: "236 episodes", rating: "8.9", status: "Published", views: "5.4M", uploadDate: "2024-02-25" },
-        { id: 11, title: "The Matrix", type: "Movie", genre: "Sci-Fi", duration: "136 min", rating: "8.7", status: "Published", views: "2.1M", uploadDate: "2024-03-01" },
-        { id: 12, title: "The Mandalorian", type: "TV Show", genre: "Sci-Fi", duration: "24 episodes", rating: "8.8", status: "Published", views: "4.7M", uploadDate: "2024-03-05" },
-        { id: 13, title: "Forrest Gump", type: "Movie", genre: "Drama", duration: "142 min", rating: "8.8", status: "Published", views: "2.5M", uploadDate: "2024-03-10" },
-        { id: 14, title: "The Crown", type: "TV Show", genre: "Drama", duration: "60 episodes", rating: "8.7", status: "Published", views: "3.8M", uploadDate: "2024-03-15" },
-        { id: 15, title: "Fight Club", type: "Movie", genre: "Drama", duration: "139 min", rating: "8.8", status: "Published", views: "1.7M", uploadDate: "2024-03-20" },
-        { id: 16, title: "Sherlock", type: "TV Show", genre: "Crime", duration: "15 episodes", rating: "9.1", status: "Published", views: "4.3M", uploadDate: "2024-03-25" },
-        { id: 17, title: "The Godfather", type: "Movie", genre: "Crime", duration: "175 min", rating: "9.2", status: "Published", views: "2.0M", uploadDate: "2024-04-01" },
-        { id: 18, title: "Westworld", type: "TV Show", genre: "Sci-Fi", duration: "36 episodes", rating: "8.6", status: "Published", views: "3.1M", uploadDate: "2024-04-05" },
-        { id: 19, title: "Goodfellas", type: "Movie", genre: "Crime", duration: "146 min", rating: "8.7", status: "Draft", views: "0", uploadDate: "2024-04-10" },
-        { id: 20, title: "The Witcher", type: "TV Show", genre: "Fantasy", duration: "24 episodes", rating: "8.2", status: "Published", views: "3.9M", uploadDate: "2024-04-15" },
-        { id: 21, title: "Parasite", type: "Movie", genre: "Thriller", duration: "132 min", rating: "8.5", status: "Published", views: "1.4M", uploadDate: "2024-04-20" }
-      ];
-      setAllContent(defaultContent);
-      localStorage.setItem("contentLibrary", JSON.stringify(defaultContent));
+  const { data: allContent = [], isLoading } = useQuery({
+    queryKey: ['content'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('content')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as Content[];
     }
-  }, []);
+  });
 
   const filteredContent = allContent.filter(content =>
     content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -85,7 +70,7 @@ const ContentManagement = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentContent = filteredContent.slice(startIndex, endIndex);
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     setEditingId(id);
   };
 
@@ -95,25 +80,30 @@ const ContentManagement = () => {
 
   const handleSaveEdit = () => {
     setEditingId(null);
-    // Reload content from localStorage
-    const storedContent = localStorage.getItem("contentLibrary");
-    if (storedContent) {
-      setAllContent(JSON.parse(storedContent));
-    }
+    queryClient.invalidateQueries({ queryKey: ['content'] });
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
     const content = allContent.find(c => c.id === id);
-    const updatedContent = allContent.filter(c => c.id !== id);
-    setAllContent(updatedContent);
-    localStorage.setItem("contentLibrary", JSON.stringify(updatedContent));
+    
+    const { error } = await supabase
+      .from('content')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete content",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['content'] });
     
     // Reset to first page if current page becomes empty
-    const newFilteredContent = updatedContent.filter(content =>
-      content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      content.genre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      content.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const newFilteredContent = allContent.filter(c => c.id !== id);
     const newTotalPages = Math.ceil(newFilteredContent.length / itemsPerPage);
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(newTotalPages);
@@ -133,10 +123,32 @@ const ContentManagement = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
+  const handleAddSuccess = () => {
+    setShowAddForm(false);
+    queryClient.invalidateQueries({ queryKey: ['content'] });
+  };
+
   // Reset to first page when search term changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
+
+  if (showAddForm) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Add Content</h2>
+          <Button
+            variant="outline"
+            onClick={() => setShowAddForm(false)}
+          >
+            Back to Library
+          </Button>
+        </div>
+        <ContentUploadForm onSuccess={handleAddSuccess} />
+      </div>
+    );
+  }
 
   if (editingId) {
     return (
@@ -159,6 +171,10 @@ const ContentManagement = () => {
     );
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Actions */}
@@ -178,7 +194,10 @@ const ContentManagement = () => {
             Filter
           </Button>
         </div>
-        <Button className="gap-2 bg-primary hover:bg-primary/90">
+        <Button 
+          className="gap-2 bg-primary hover:bg-primary/90"
+          onClick={() => setShowAddForm(true)}
+        >
           <Plus className="h-4 w-4" />
           Add Content
         </Button>

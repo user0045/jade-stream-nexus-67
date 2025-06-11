@@ -7,21 +7,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UpcomingContent {
-  id: number;
+  id: string;
   title: string;
   genre: string;
-  releaseDate: string;
+  release_date: string;
   description: string;
   type: "movie" | "tv";
-  thumbnailUrl: string;
-  trailerUrl: string;
-  sectionOrder: number;
+  thumbnail_url: string | null;
+  trailer_url: string | null;
+  section_order: number;
 }
 
 interface UpcomingEditFormProps {
-  contentId: number;
+  contentId: string;
   onCancel: () => void;
   onSave: () => void;
 }
@@ -29,25 +30,59 @@ interface UpcomingEditFormProps {
 const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<UpcomingContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
-    const content = storedContent.find((item: UpcomingContent) => item.id === contentId);
-    if (content) {
-      setFormData(content);
-    }
-  }, [contentId]);
+    const fetchContent = async () => {
+      const { data, error } = await supabase
+        .from('upcoming_content')
+        .select('*')
+        .eq('id', contentId)
+        .single();
 
-  const handleSubmit = (e: React.FormEvent) => {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load upcoming content",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setFormData(data);
+      setIsLoading(false);
+    };
+
+    fetchContent();
+  }, [contentId, toast]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData) return;
 
-    const storedContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
-    const updatedContent = storedContent.map((item: UpcomingContent) =>
-      item.id === contentId ? formData : item
-    );
+    const { error } = await supabase
+      .from('upcoming_content')
+      .update({
+        title: formData.title,
+        type: formData.type,
+        genre: formData.genre,
+        release_date: formData.release_date,
+        description: formData.description,
+        thumbnail_url: formData.thumbnail_url,
+        trailer_url: formData.trailer_url,
+        section_order: formData.section_order,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', contentId);
 
-    localStorage.setItem("upcomingContent", JSON.stringify(updatedContent));
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update upcoming content",
+        variant: "destructive"
+      });
+      return;
+    }
     
     toast({
       title: "Success",
@@ -63,8 +98,12 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
     }
   };
 
-  if (!formData) {
+  if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (!formData) {
+    return <div>Content not found</div>;
   }
 
   return (
@@ -112,35 +151,35 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="releaseDate">Release Date</Label>
+              <Label htmlFor="release_date">Release Date</Label>
               <Input
-                id="releaseDate"
+                id="release_date"
                 type="date"
-                value={formData.releaseDate}
-                onChange={(e) => handleInputChange("releaseDate", e.target.value)}
+                value={formData.release_date}
+                onChange={(e) => handleInputChange("release_date", e.target.value)}
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="sectionOrder">Section Order</Label>
+              <Label htmlFor="section_order">Section Order</Label>
               <Input
-                id="sectionOrder"
+                id="section_order"
                 type="number"
                 min="1"
                 max="20"
-                value={formData.sectionOrder}
-                onChange={(e) => handleInputChange("sectionOrder", parseInt(e.target.value))}
+                value={formData.section_order}
+                onChange={(e) => handleInputChange("section_order", parseInt(e.target.value))}
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+              <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
               <Input
-                id="thumbnailUrl"
-                value={formData.thumbnailUrl}
-                onChange={(e) => handleInputChange("thumbnailUrl", e.target.value)}
+                id="thumbnail_url"
+                value={formData.thumbnail_url || ""}
+                onChange={(e) => handleInputChange("thumbnail_url", e.target.value)}
                 placeholder="https://example.com/thumbnail.jpg"
               />
             </div>
@@ -158,11 +197,11 @@ const UpcomingEditForm = ({ contentId, onCancel, onSave }: UpcomingEditFormProps
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="trailerUrl">Trailer URL</Label>
+            <Label htmlFor="trailer_url">Trailer URL</Label>
             <Input
-              id="trailerUrl"
-              value={formData.trailerUrl}
-              onChange={(e) => handleInputChange("trailerUrl", e.target.value)}
+              id="trailer_url"
+              value={formData.trailer_url || ""}
+              onChange={(e) => handleInputChange("trailer_url", e.target.value)}
               placeholder="https://example.com/trailer.mp4"
             />
           </div>

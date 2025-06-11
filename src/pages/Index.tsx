@@ -2,6 +2,8 @@
 import PremiumNavbar from "@/components/PremiumNavbar";
 import HeroSlider from "@/components/HeroSlider";
 import SimplePremiumContentRow from "@/components/SimplePremiumContentRow";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Movie {
   id: number;
@@ -13,20 +15,32 @@ interface Movie {
 }
 
 const Index = () => {
-  // Load content from admin uploads (localStorage)
-  const getContentLibrary = (): Movie[] => {
-    const storedContent = JSON.parse(localStorage.getItem("contentLibrary") || "[]");
-    return storedContent.map((item: any) => ({
-      id: item.id,
-      title: item.title,
-      genre: item.genre,
-      rating: item.rating,
-      year: item.uploadDate ? new Date(item.uploadDate).getFullYear().toString() : "2024",
-      type: item.type === "Movie" ? "movie" as const : "tv" as const
-    })).filter((item: Movie) => item.title); // Only include items with titles
-  };
+  const { data: contentLibrary = [] } = useQuery({
+    queryKey: ['content-library'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('content')
+        .select('*')
+        .eq('status', 'Published')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching content:', error);
+        return [];
+      }
+      
+      return data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        genre: item.genre,
+        rating: item.rating,
+        year: item.release_year ? item.release_year.toString() : new Date(item.created_at).getFullYear().toString(),
+        type: item.type === "Movie" ? "movie" as const : "tv" as const
+      }));
+    }
+  });
 
-  // Fallback content if no admin content exists
+  // Fallback content if no database content exists
   const fallbackContent: Movie[] = [
     { id: 1, title: "Oppenheimer", genre: "Biography • Drama", rating: "R", year: "2023", type: "movie" },
     { id: 2, title: "Barbie", genre: "Comedy • Adventure", rating: "PG-13", year: "2023", type: "movie" },
@@ -40,8 +54,7 @@ const Index = () => {
     { id: 10, title: "Stranger Things", genre: "Sci-Fi • Horror", rating: "TV-14", year: "2022", type: "tv" },
   ];
 
-  const allContent = getContentLibrary();
-  const contentToUse = allContent.length > 0 ? allContent : fallbackContent;
+  const contentToUse = contentLibrary.length > 0 ? contentLibrary : fallbackContent;
 
   // Get latest 11 items for each category
   const getLatest11 = (filterFn: (item: Movie) => boolean): Movie[] => {

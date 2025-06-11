@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Calendar, Upload, Save } from "lucide-react";
+import { Calendar, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UpcomingUploadFormProps {
   onSuccess?: () => void;
@@ -18,33 +20,35 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
     title: "",
     type: "",
     genre: "",
-    releaseDate: "",
+    release_date: "",
     description: "",
-    thumbnailUrl: "",
-    trailerUrl: "",
-    sectionOrder: ""
+    thumbnail_url: "",
+    trailer_url: "",
+    section_order: ""
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const adjustOrdersForNewContent = (newOrder: number, existingContent: any[]) => {
-    // Move all content with order >= newOrder by +1
-    return existingContent.map(item => ({
-      ...item,
-      sectionOrder: item.sectionOrder >= newOrder ? item.sectionOrder + 1 : item.sectionOrder
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const existingUpcomingContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
-    const newOrder = parseInt(formData.sectionOrder);
-    
     // Check if there are already 20 upcoming content items
-    if (existingUpcomingContent.length >= 20) {
+    const { count, error: countError } = await supabase
+      .from('upcoming_content')
+      .select('*', { count: 'exact', head: true });
+
+    if (countError) {
+      toast({
+        title: "Error",
+        description: "Failed to check existing content count",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (count && count >= 20) {
       toast({
         title: "Error",
         description: "Maximum of 20 upcoming content items allowed. Please delete some items first.",
@@ -53,30 +57,62 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
       return;
     }
 
-    console.log("Upcoming content data:", formData);
+    const newOrder = parseInt(formData.section_order);
     
-    // Adjust existing orders if the chosen order is taken
-    const orderTaken = existingUpcomingContent.some((item: any) => item.sectionOrder === newOrder);
-    let updatedExistingContent = existingUpcomingContent;
-    
-    if (orderTaken) {
-      updatedExistingContent = adjustOrdersForNewContent(newOrder, existingUpcomingContent);
+    // Check if the chosen order is taken and adjust if needed
+    const { data: existingContent, error: fetchError } = await supabase
+      .from('upcoming_content')
+      .select('section_order')
+      .gte('section_order', newOrder)
+      .order('section_order', { ascending: true });
+
+    if (fetchError) {
+      toast({
+        title: "Error",
+        description: "Failed to check existing orders",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // If there's content with the same or higher order, we need to shift them
+    if (existingContent && existingContent.length > 0) {
+      // Shift existing orders up by 1
+      for (const content of existingContent) {
+        await supabase
+          .from('upcoming_content')
+          .update({ section_order: content.section_order + 1 })
+          .eq('section_order', content.section_order);
+      }
     }
     
-    // Save to localStorage
-    const newContent = {
-      ...formData,
-      id: Date.now(),
-      sectionOrder: newOrder
-    };
-    
-    const updatedContent = [...updatedExistingContent, newContent];
-    localStorage.setItem("upcomingContent", JSON.stringify(updatedContent));
+    // Insert the new content
+    const { error } = await supabase
+      .from('upcoming_content')
+      .insert({
+        title: formData.title,
+        type: formData.type as "movie" | "tv",
+        genre: formData.genre,
+        release_date: formData.release_date,
+        description: formData.description,
+        thumbnail_url: formData.thumbnail_url || null,
+        trailer_url: formData.trailer_url || null,
+        section_order: newOrder
+      });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add upcoming content",
+        variant: "destructive"
+      });
+      return;
+    }
     
     toast({
       title: "Success",
-      description: orderTaken 
-        ? `Upcoming content added successfully! Orders adjusted automatically.`
+      description: existingContent && existingContent.length > 0 
+        ? "Upcoming content added successfully! Orders adjusted automatically."
         : "Upcoming content added successfully!"
     });
 
@@ -85,11 +121,11 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
       title: "",
       type: "",
       genre: "",
-      releaseDate: "",
+      release_date: "",
       description: "",
-      thumbnailUrl: "",
-      trailerUrl: "",
-      sectionOrder: ""
+      thumbnail_url: "",
+      trailer_url: "",
+      section_order: ""
     });
 
     // Close form if callback provided
@@ -152,8 +188,8 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sectionOrder" className="text-foreground">Section Order (1-20)</Label>
-              <Select onValueChange={(value) => handleInputChange("sectionOrder", value)} required>
+              <Label htmlFor="section_order" className="text-foreground">Section Order (1-20)</Label>
+              <Select onValueChange={(value) => handleInputChange("section_order", value)} required>
                 <SelectTrigger className="bg-input border-border text-foreground">
                   <SelectValue placeholder="Select order position" />
                 </SelectTrigger>
@@ -169,12 +205,12 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="releaseDate" className="text-foreground">Release Date</Label>
+            <Label htmlFor="release_date" className="text-foreground">Release Date</Label>
             <Input
-              id="releaseDate"
+              id="release_date"
               type="date"
-              value={formData.releaseDate}
-              onChange={(e) => handleInputChange("releaseDate", e.target.value)}
+              value={formData.release_date}
+              onChange={(e) => handleInputChange("release_date", e.target.value)}
               className="bg-input border-border text-foreground"
               required
             />
@@ -195,28 +231,26 @@ const UpcomingUploadForm = ({ onSuccess }: UpcomingUploadFormProps) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="thumbnailUrl" className="text-foreground">Thumbnail URL</Label>
+              <Label htmlFor="thumbnail_url" className="text-foreground">Thumbnail URL</Label>
               <Input
-                id="thumbnailUrl"
+                id="thumbnail_url"
                 type="url"
-                value={formData.thumbnailUrl}
-                onChange={(e) => handleInputChange("thumbnailUrl", e.target.value)}
+                value={formData.thumbnail_url}
+                onChange={(e) => handleInputChange("thumbnail_url", e.target.value)}
                 placeholder="https://example.com/thumbnail.jpg"
                 className="bg-input border-border text-foreground"
-                required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="trailerUrl" className="text-foreground">Trailer URL</Label>
+              <Label htmlFor="trailer_url" className="text-foreground">Trailer URL</Label>
               <Input
-                id="trailerUrl"
+                id="trailer_url"
                 type="url"
-                value={formData.trailerUrl}
-                onChange={(e) => handleInputChange("trailerUrl", e.target.value)}
+                value={formData.trailer_url}
+                onChange={(e) => handleInputChange("trailer_url", e.target.value)}
                 placeholder="https://example.com/trailer.mp4"
                 className="bg-input border-border text-foreground"
-                required
               />
             </div>
           </div>

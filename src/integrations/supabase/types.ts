@@ -9,16 +9,229 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      content: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: string
+          genre: string
+          id: string
+          rating: string
+          release_year: number | null
+          status: string
+          thumbnail_url: string | null
+          title: string
+          trailer_url: string | null
+          type: string
+          updated_at: string
+          video_url: string | null
+          views: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration: string
+          genre: string
+          id?: string
+          rating: string
+          release_year?: number | null
+          status?: string
+          thumbnail_url?: string | null
+          title: string
+          trailer_url?: string | null
+          type: string
+          updated_at?: string
+          video_url?: string | null
+          views?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: string
+          genre?: string
+          id?: string
+          rating?: string
+          release_year?: number | null
+          status?: string
+          thumbnail_url?: string | null
+          title?: string
+          trailer_url?: string | null
+          type?: string
+          updated_at?: string
+          video_url?: string | null
+          views?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      upcoming_content: {
+        Row: {
+          created_at: string
+          description: string
+          genre: string
+          id: string
+          release_date: string
+          section_order: number
+          thumbnail_url: string | null
+          title: string
+          trailer_url: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          genre: string
+          id?: string
+          release_date: string
+          section_order: number
+          thumbnail_url?: string | null
+          title: string
+          trailer_url?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          genre?: string
+          id?: string
+          release_date?: string
+          section_order?: number
+          thumbnail_url?: string | null
+          title?: string
+          trailer_url?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      viewing_history: {
+        Row: {
+          completed: boolean | null
+          content_id: string
+          id: string
+          progress_seconds: number | null
+          user_id: string
+          watched_at: string
+        }
+        Insert: {
+          completed?: boolean | null
+          content_id: string
+          id?: string
+          progress_seconds?: number | null
+          user_id: string
+          watched_at?: string
+        }
+        Update: {
+          completed?: boolean | null
+          content_id?: string
+          id?: string
+          progress_seconds?: number | null
+          user_id?: string
+          watched_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "viewing_history_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watchlist: {
+        Row: {
+          added_at: string
+          content_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          content_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          content_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +346,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

@@ -1,45 +1,63 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { Calendar, Edit, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UpcomingUploadForm from "./UpcomingUploadForm";
 import UpcomingEditForm from "./UpcomingEditForm";
 
 interface UpcomingContent {
-  id: number;
+  id: string;
   title: string;
   genre: string;
-  releaseDate: string;
+  release_date: string;
   description: string;
   type: "movie" | "tv";
-  thumbnailUrl: string;
-  trailerUrl: string;
-  sectionOrder: number;
+  thumbnail_url: string | null;
+  trailer_url: string | null;
+  section_order: number;
 }
 
 const UpcomingContentManagement = () => {
   const { toast } = useToast();
-  const [upcomingContent, setUpcomingContent] = useState<UpcomingContent[]>([]);
+  const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadUpcomingContent();
-  }, []);
+  const { data: upcomingContent = [], isLoading } = useQuery({
+    queryKey: ['upcoming-content'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('upcoming_content')
+        .select('*')
+        .order('section_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as UpcomingContent[];
+    }
+  });
 
-  const loadUpcomingContent = () => {
-    const storedContent = JSON.parse(localStorage.getItem("upcomingContent") || "[]");
-    const sortedContent = storedContent.sort((a: UpcomingContent, b: UpcomingContent) => a.sectionOrder - b.sectionOrder);
-    setUpcomingContent(sortedContent);
-  };
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase
+      .from('upcoming_content')
+      .delete()
+      .eq('id', id);
 
-  const handleDelete = (id: number) => {
-    const updatedContent = upcomingContent.filter(content => content.id !== id);
-    localStorage.setItem("upcomingContent", JSON.stringify(updatedContent));
-    setUpcomingContent(updatedContent);
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete upcoming content",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['upcoming-content'] });
     
     toast({
       title: "Success",
@@ -47,7 +65,7 @@ const UpcomingContentManagement = () => {
     });
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     setEditingId(id);
   };
 
@@ -57,12 +75,12 @@ const UpcomingContentManagement = () => {
 
   const handleSaveEdit = () => {
     setEditingId(null);
-    loadUpcomingContent();
+    queryClient.invalidateQueries({ queryKey: ['upcoming-content'] });
   };
 
   const handleAddSuccess = () => {
     setShowAddForm(false);
-    loadUpcomingContent();
+    queryClient.invalidateQueries({ queryKey: ['upcoming-content'] });
   };
 
   const formatDate = (dateString: string) => {
@@ -81,10 +99,7 @@ const UpcomingContentManagement = () => {
           <h2 className="text-2xl font-bold text-foreground">Add Upcoming Content</h2>
           <Button
             variant="outline"
-            onClick={() => {
-              setShowAddForm(false);
-              loadUpcomingContent();
-            }}
+            onClick={() => setShowAddForm(false)}
           >
             Back to Management
           </Button>
@@ -113,6 +128,10 @@ const UpcomingContentManagement = () => {
         />
       </div>
     );
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -166,7 +185,7 @@ const UpcomingContentManagement = () => {
                 <TableRow key={content.id}>
                   <TableCell>
                     <Badge variant="outline" className="border-primary text-primary">
-                      {content.sectionOrder}
+                      {content.section_order}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-medium">{content.title}</TableCell>
@@ -176,7 +195,7 @@ const UpcomingContentManagement = () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{content.genre}</TableCell>
-                  <TableCell>{formatDate(content.releaseDate)}</TableCell>
+                  <TableCell>{formatDate(content.release_date)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
